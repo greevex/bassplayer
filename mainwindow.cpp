@@ -35,20 +35,6 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-void MainWindow::toggleEQ()
-{
-    qDebug() << "click";
-    if(!this->eq->isHidden())
-    {
-        this->eq->hide();
-        this->ui->pushButton_4->setStyleSheet("color: blue;");
-    }
-    else
-    {
-        this->eq->show();
-        this->ui->pushButton_4->setStyleSheet("color: red;");
-    }
-}
 void MainWindow::setHand()
 {
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(openFile()));
@@ -317,6 +303,7 @@ void MainWindow::changeTrack(QString str)
     this->timer->start();
     this->updateHFX();
     this->eq->setEq();
+    this->stopping = false;
     this->playPause();
 }
 void MainWindow::setTitle(){
@@ -344,6 +331,19 @@ void MainWindow::setTitle(){
     }
     else{
         this->setWindowTitle(name);
+    }
+}
+void MainWindow::toggleEQ()
+{
+    if(!this->eq->isHidden())
+    {
+        this->eq->hide();
+        this->ui->pushButton_4->setStyleSheet("color: blue;");
+    }
+    else
+    {
+        this->eq->show();
+        this->ui->pushButton_4->setStyleSheet("color: red;");
     }
 }
 void MainWindow::togglePL(){
