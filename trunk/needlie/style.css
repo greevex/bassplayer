@@ -1,0 +1,10 @@
+QMainWindow, Pl, Eq, Pl > QListWidget{
+    background: #ccf;
+    /*background-image: url('./images/wall.jpg');*/
+}
+QSlider::groove:horizontal {
+    /*тут стиль для полоски под ползунком */
+}
+QSlider::handle:horizontal {
+    /* тут стиль для ползунка */
+}
