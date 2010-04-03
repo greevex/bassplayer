@@ -100,8 +100,8 @@ void Pl::addPath(QString path){
 void Pl::trackClick(QListWidgetItem *qlwi)
 {
    int row =  this->ui->listWidget->row(qlwi);
+   this->_curr = row;
    this->changeTrack(this->tracks->value(row));
-    this->_curr = row;
     this->select(this->_curr);
 }
 void Pl::next(QString file)
