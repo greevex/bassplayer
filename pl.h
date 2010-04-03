@@ -23,7 +23,11 @@ public:
     void addTrack(QString path);
     void addPath(QString path);
     void next(QString file);
+    bool save(QString path);
+    bool load(QString path);
     QString current();
+    void setCurrent(int pos);
+    int getCurrent();
 
 protected:
     void changeEvent(QEvent *e);
