@@ -44,8 +44,6 @@ void Pl::dragEnterEvent(QDragEnterEvent *event){
     }
 }
 void Pl::dropEvent(QDropEvent *event){
-    qDebug() << "dropped...";
-    qDebug() << event->mimeData()->urls().value(0).toString(QUrl::None);
     QList<QUrl> urls = event->mimeData()->urls();
     QString file;
     for(int i = 0; i < urls.length(); i++){
@@ -58,13 +56,11 @@ void Pl::dropEvent(QDropEvent *event){
         QDir dir(file);
         if(dir.exists()){
             this->addPath(file);
-            dir.~QDir();
         }
         else{
             QFile f(file);
             if(f.exists()){
                 this->addTrack(file);
-                f.~QFile();
             }
         }
     }
