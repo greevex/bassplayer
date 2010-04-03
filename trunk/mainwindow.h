@@ -44,6 +44,7 @@ private:
     void showPl(bool vis);
     void showVis(bool vis);
     void setStyle(QString file);
+    void resumePlay();
     HFX hand80;
     HFX hand170;
     HFX hand300;
@@ -57,6 +58,8 @@ private:
     QString currplayed;
     QString style;
     QSettings *setting;
+    int current;
+    int _lstpos; //last position
     int _tstrl;
     int _cstrct;
     bool _revscr;
@@ -76,6 +79,8 @@ private slots:
     void toggleVis();
     void saveConf();
     void changeTrack(QString str);
+    void next();
+    void prew();
 };
 
 #endif // MAINWINDOW_H
