@@ -40,6 +40,7 @@ void Vis::changeEvent(QEvent *e)
 }
 void Vis::paintEvent(QPaintEvent *event){
         QPainter paint(this);
+        paint.fillRect(0, 0, this->width(), this->height(), QColor(0x00, 0x00, 0x00));
         paint.setPen(QColor(0xc0, 0xc0, 0xf0));
         BASS_ChannelGetData(this->chan, fft, BASS_DATA_FFT4096); //получение даных БФП
         float c = 0;
