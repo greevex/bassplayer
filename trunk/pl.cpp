@@ -117,6 +117,7 @@ QString Pl::current(){
 }
 void Pl::setCurrent(int pos){
     qDebug() << pos;
+    this->_curr = pos;
     this->changeTrack(this->tracks->value(pos));
 }
 int Pl::getCurrent(){
@@ -131,10 +132,16 @@ bool Pl::save(QString path){
     if(this->tracks->length() < 1){
         return false;
     }
-    QSettings setting(path, QSettings::IniFormat);
-    for(int i = 0; i < this->tracks->length(); i++){
-        setting.setValue(QString().setNum(i), this->tracks->value(i));
+    QFile file(path);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    file.setTextModeEnabled(true);
+    file.write("#EXTM3U\n");
+    int l = this->tracks->length();
+    for(int i = 0; i < l; i++){
+        file.write(QByteArray().append("#EXTINF:0,").append(this->ui->listWidget->item(i)->text().toUtf8()).append("\n"));
+        file.write(QByteArray().append(this->tracks->value(i).toUtf8()).append("\n"));
     }
+    file.close();
     return true;
 }
 bool Pl::load(QString path){
@@ -142,13 +149,25 @@ bool Pl::load(QString path){
         qDebug() << "load false";
         return false;
     }
-    QSettings setting(path, QSettings::IniFormat);
-    int listl = setting.allKeys().length();
-    if(listl < 1){
+    QFile file(path);
+    if(!file.exists()){
+        qDebug() << "file not found...";
         return false;
     }
-    for(int i = 0; i < listl; i++){
-        this->addTrack(setting.value(QString().setNum(i), "").toString());
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    file.setTextModeEnabled(true);
+    if(!file.isOpen()){
+        qDebug() << "File is not open...";
     }
+    QString str;
+    while(file.bytesAvailable() > 0){
+        str = QString().fromUtf8(file.readLine(1024)).trimmed();
+        if(str.isEmpty() || str.at(0) == '#'){
+            continue;
+        }
+        this->addTrack(str);
+    }
+    qDebug() << file.errorString();
+    file.close();
     return true;
 }

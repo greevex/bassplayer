@@ -401,7 +401,6 @@ void MainWindow::setStyle(QString file){
     QFile f(file);
     if(f.exists() && f.open(QIODevice::ReadOnly)){
         this->setStyleSheet((*new QString(f.readAll())));
-        qDebug() << "style added: " + this->styleSheet();
         f.close();
         return;
     }
