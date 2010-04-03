@@ -117,12 +117,12 @@ void MainWindow::stop()
 }
 void MainWindow::Update()
 {
-    int currPos = this->getPosition();
     if(BASS_ChannelIsActive(this->channel) == BASS_ACTIVE_STOPPED && !this->stopping)
     {
         qDebug() << "next track";
-        this->playlist->next(this->currplayed);
+        this->next();
     }
+    int currPos = this->getPosition();
     this->ui->horizontalSlider->setValue(currPos);
     //current position
     QString *min = new QString();
@@ -144,13 +144,7 @@ void MainWindow::Update()
         dsec->prepend("0");
     //
     QString *time = new QString();
-    time->append(min);
-    time->append(":");
-    time->append(sec);
-    time->append("/");
-    time->append(dmin);
-    time->append(":");
-    time->append(dsec);
+    time->append(min).append(":").append(sec).append("/").append(dmin).append(":").append(dsec);
     this->ui->label->setText(*time);
     this->vis->setChannel(this->channel);
 }
@@ -337,6 +331,7 @@ void MainWindow::changeTrack(QString str)
     this->updateHFX();
     this->eq->setEq();
     this->stopping = false;
+    this->current = this->playlist->getCurrent();
     this->playPause();
 }
 void MainWindow::setTitle(){
