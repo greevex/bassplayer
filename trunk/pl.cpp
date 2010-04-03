@@ -6,6 +6,7 @@
 #include <QDropEvent>
 #include <QUrl>
 #include <QDir>
+#include <QSettings>
 
 Pl::Pl(QWidget *parent) : QDialog(parent),
     ui(new Ui::Pl)
@@ -71,12 +72,14 @@ void Pl::dropEvent(QDropEvent *event){
 
 void Pl::addTrack(QString path)
 {
-        qDebug() << "added: " + path;
-        this->tracks->append(path);
-        QFileInfo *f = new QFileInfo(path);
-        this->names->append(f->fileName());
-        QListWidgetItem *trk = new QListWidgetItem(this->ui->listWidget);
-        trk->setText(this->names->last());
+    if(path.isEmpty()){
+        return;
+    }
+    this->tracks->append(path);
+    QFileInfo *f = new QFileInfo(path);
+    this->names->append(f->fileName());
+    QListWidgetItem *trk = new QListWidgetItem(this->ui->listWidget);
+    trk->setText(this->names->last());
 }
 void Pl::addPath(QString path){
     QDir dir(path);
@@ -96,7 +99,6 @@ void Pl::trackClick(QListWidgetItem *qlwi)
 {
    int row =  this->ui->listWidget->row(qlwi);
    this->changeTrack(this->tracks->value(row));
-    qDebug() << "click" << qlwi->text() << this->tracks->value(row);
     this->_curr = row;
     this->ui->listWidget->setItemSelected(this->ui->listWidget->item(row), true);
 }
@@ -116,4 +118,41 @@ QString Pl::current(){
         this->_curr = 0;
     this->ui->listWidget->setItemSelected(this->ui->listWidget->item(this->_curr), true);
     return this->tracks->value(this->_curr);
+}
+void Pl::setCurrent(int pos){
+    qDebug() << pos;
+    this->changeTrack(this->tracks->value(pos));
+}
+int Pl::getCurrent(){
+    return this->_curr;
+}
+
+bool Pl::save(QString path){
+    if(path.isEmpty()){
+        qDebug() << "save false...";
+        return false;
+    }
+    if(this->tracks->length() < 1){
+        return false;
+    }
+    QSettings setting(path, QSettings::IniFormat);
+    for(int i = 0; i < this->tracks->length(); i++){
+        setting.setValue(QString().setNum(i), this->tracks->value(i));
+    }
+    return true;
+}
+bool Pl::load(QString path){
+    if(path.isEmpty()){
+        qDebug() << "load false";
+        return false;
+    }
+    QSettings setting(path, QSettings::IniFormat);
+    int listl = setting.allKeys().length();
+    if(listl < 1){
+        return false;
+    }
+    for(int i = 0; i < listl; i++){
+        this->addTrack(setting.value(QString().setNum(i), "").toString());
+    }
+    return true;
 }

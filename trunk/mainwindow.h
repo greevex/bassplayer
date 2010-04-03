@@ -16,7 +16,7 @@ namespace Ui {
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
+    MainWindow(QApplication *parent = 0);
     ~MainWindow();
 
 protected:
@@ -26,6 +26,7 @@ private:
     Ui::MainWindow *ui;
     QTimer *timer;
     QTimer *conftimer;
+    QTimer *titletimer;
     Eq *eq;
     Pl *playlist;
     Vis *vis;
@@ -38,7 +39,7 @@ private:
     void setHand();
     void loadConf();
     void playNext();
-    void setTitle();
+    int getPosition();
     void showEq(bool vis);
     void showPl(bool vis);
     void showVis(bool vis);
@@ -65,8 +66,10 @@ private slots:
     void playPause();
     void stop();
     void Update();
+    void setTitle();
     void setVolume();
     void setPosition();
+    void setPosition(int pos);
     void setPan();
     void toggleEQ();
     void togglePL();
