@@ -10,10 +10,12 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     BASS_Init(-1, 44100, 0, NULL, NULL);
     this->_tstrl = 20;
     this->_cstrct = 0;
-    this->_revscr = false;
+    this->duration = 0;
     this->_cscr = "";
     this->currplayed = "";
     this->lastPath = "./";
+    this->_revscr = false;
+    this->played = false;
     this->setting = new QSettings("./setting.ini", QSettings::IniFormat, this);
     this->conftimer = new QTimer(this);
     this->timer = new QTimer(this);
@@ -23,15 +25,15 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->vis = new Vis(this);
     this->setHand();
     this->loadConf();
-    this->played = false;
-    this->duration = 0;
     this->timer->setInterval(100);
-    this->conftimer->setInterval(5000);
+    this->conftimer->setInterval(1000);
     this->titletimer->setInterval(500);
     this->conftimer->start();
     this->titletimer->start();
     this->stopping = true;
     this->setStyle(this->style);
+    this->playlist->load(this->playlist->path);
+    this->resumePlay();
 }
 
 MainWindow::~MainWindow()
@@ -52,6 +54,8 @@ void MainWindow::setHand()
     connect(this->ui->pushButton_4, SIGNAL(clicked()), this, SLOT(toggleEQ()));
     connect(this->ui->pushButton_5, SIGNAL(clicked()), this, SLOT(togglePL()));
     connect(this->ui->pushButton_6, SIGNAL(clicked()), this, SLOT(toggleVis()));
+    connect(this->ui->pushButton_7, SIGNAL(clicked()), this, SLOT(next()));
+    connect(this->ui->pushButton_8, SIGNAL(clicked()), this, SLOT(prew()));
     connect(this->playlist, SIGNAL(changeTrack(QString)), this, SLOT(changeTrack(QString)));
 }
 void MainWindow::changeEvent(QEvent *e)
@@ -169,7 +173,6 @@ int MainWindow::getPosition(){
     QWORD pos = BASS_ChannelGetPosition(this->channel, BASS_POS_BYTE);
     return (int)BASS_ChannelBytes2Seconds(this->channel, pos);
 }
-
 void MainWindow::setVolume()
 {
     float f = (float)ui->horizontalSlider_2->value()/100;
@@ -257,10 +260,9 @@ void MainWindow::saveConf()
     this->setting->setValue("VisPosX", this->vis->x());
     this->setting->setValue("VisPosY", this->vis->y());
     this->setting->setValue("Style", this->style);
-    this->setting->setValue("PlayList", "./playlist.pla");
+    this->setting->setValue("PlayList", "./playlist.m3u");
     this->setting->setValue("LastPlayed", this->playlist->getCurrent());
     this->setting->setValue("LastPosition", this->getPosition());
-    this->playlist->save("./playlist.pla");
 }
 void MainWindow::loadConf()
 {
@@ -305,11 +307,24 @@ void MainWindow::loadConf()
         this->playlist->move(this->setting->value("PlPosX", 0).toInt(), this->setting->value("PlPosY", 0).toInt());
         this->vis->move(this->setting->value("VisPosX", 0).toInt(), this->setting->value("VisPosY", 0).toInt());
         this->style = this->setting->value("Style", "./style.css").toString();
-        this->playlist->load(this->setting->value("Playlist", "").toString());
-        this->playlist->setCurrent(this->setting->value("LastPlayed", 0).toInt());
-        this->setPosition(this->setting->value("LastPosition", 0).toInt());
+        this->playlist->path = this->setting->value("Playlist", "./playlist.m3u").toString();
+        this->current = this->setting->value("LastPlayed", 0).toInt();
+        this->_lstpos = this->setting->value("LastPosition", 0).toInt();
     }
 }
+void MainWindow::resumePlay(){
+    this->playlist->setCurrent(this->current);
+    this->setPosition(this->_lstpos);
+}
+void MainWindow::next(){
+    this->playlist->setCurrent(this->current + 1);
+    this->current = this->playlist->getCurrent();
+}
+void MainWindow::prew(){
+    this->playlist->setCurrent(this->current - 1);
+    this->current = this->playlist->getCurrent();
+}
+
 void MainWindow::changeTrack(QString str)
 {
     this->currplayed = str;

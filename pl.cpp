@@ -7,6 +7,7 @@
 #include <QUrl>
 #include <QDir>
 #include <QSettings>
+#include <QTimer>
 
 Pl::Pl(QWidget *parent) : QDialog(parent),
     ui(new Ui::Pl)
@@ -16,9 +17,14 @@ Pl::Pl(QWidget *parent) : QDialog(parent),
     ui->setupUi(this);
     this->tracks = new QList<QString>();
     this->names = new QList<QString>();
+    this->tmr = new QTimer();
+    this->tmr->setInterval(10000); //10 sec
+    this->tmr->start();
     this->ui->listWidget->setAcceptDrops(true);
     connect(this->ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(trackClick(QListWidgetItem*)));
+    connect(this->tmr, SIGNAL(timeout()), this, SLOT(save()));
     this->_curr = 0;
+    this->path = "./playlist.m3u";
 }
 
 Pl::~Pl()
@@ -96,7 +102,7 @@ void Pl::trackClick(QListWidgetItem *qlwi)
    int row =  this->ui->listWidget->row(qlwi);
    this->changeTrack(this->tracks->value(row));
     this->_curr = row;
-    this->ui->listWidget->setItemSelected(this->ui->listWidget->item(row), true);
+    this->select(this->_curr);
 }
 void Pl::next(QString file)
 {
@@ -106,25 +112,36 @@ void Pl::next(QString file)
     if(pos == len)
         pos = 0;
     this->changeTrack(this->tracks->value(pos));
-    this->ui->listWidget->setItemSelected(this->ui->listWidget->item(pos), true);
-    this->_curr++;
+    this->select(pos);
+    this->_curr = pos;
 }
 QString Pl::current(){
     if(this->_curr >= this->tracks->length())
         this->_curr = 0;
-    this->ui->listWidget->setItemSelected(this->ui->listWidget->item(this->_curr), true);
+    this->select(this->_curr);
     return this->tracks->value(this->_curr);
 }
 void Pl::setCurrent(int pos){
+    if(pos < 0){
+        pos = this->tracks->length() - 1;
+    }
+    if(pos >= this->tracks->length()){
+        pos = 0;
+    }
     qDebug() << pos;
     this->_curr = pos;
     this->changeTrack(this->tracks->value(pos));
+    this->select(pos);
 }
 int Pl::getCurrent(){
     return this->_curr;
 }
+void Pl::select(int idx){
+    this->ui->listWidget->setItemSelected(this->ui->listWidget->item(idx), true);
+    this->ui->listWidget->scrollToItem(this->ui->listWidget->item(idx), QAbstractItemView::PositionAtCenter);
+}
 
-bool Pl::save(QString path){
+bool Pl::save(){
     if(path.isEmpty()){
         qDebug() << "save false...";
         return false;

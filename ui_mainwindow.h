@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Fri 2. Apr 04:55:10 2010
+** Created: Sun 4. Apr 06:32:15 2010
 **      by: Qt User Interface Compiler version 4.6.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -39,6 +39,8 @@ public:
     QPushButton *pushButton_4;
     QPushButton *pushButton_5;
     QPushButton *pushButton_6;
+    QPushButton *pushButton_7;
+    QPushButton *pushButton_8;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -53,13 +55,13 @@ public:
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         pushButton = new QPushButton(centralWidget);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setGeometry(QRect(210, 20, 51, 23));
+        pushButton->setGeometry(QRect(230, 20, 31, 23));
         pushButton_2 = new QPushButton(centralWidget);
         pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
-        pushButton_2->setGeometry(QRect(260, 20, 51, 23));
+        pushButton_2->setGeometry(QRect(290, 20, 21, 23));
         pushButton_3 = new QPushButton(centralWidget);
         pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
-        pushButton_3->setGeometry(QRect(310, 20, 51, 23));
+        pushButton_3->setGeometry(QRect(310, 20, 21, 23));
         horizontalSlider = new QSlider(centralWidget);
         horizontalSlider->setObjectName(QString::fromUtf8("horizontalSlider"));
         horizontalSlider->setEnabled(true);
@@ -103,6 +105,12 @@ public:
         pushButton_6->setObjectName(QString::fromUtf8("pushButton_6"));
         pushButton_6->setGeometry(QRect(270, 50, 31, 23));
         pushButton_6->setStyleSheet(QString::fromUtf8("color: red"));
+        pushButton_7 = new QPushButton(centralWidget);
+        pushButton_7->setObjectName(QString::fromUtf8("pushButton_7"));
+        pushButton_7->setGeometry(QRect(330, 20, 31, 23));
+        pushButton_8 = new QPushButton(centralWidget);
+        pushButton_8->setObjectName(QString::fromUtf8("pushButton_8"));
+        pushButton_8->setGeometry(QRect(260, 20, 31, 23));
         MainWindow->setCentralWidget(centralWidget);
 
         retranslateUi(MainWindow);
@@ -113,9 +121,9 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0, QApplication::UnicodeUTF8));
-        pushButton->setText(QApplication::translate("MainWindow", "Open", 0, QApplication::UnicodeUTF8));
-        pushButton_2->setText(QApplication::translate("MainWindow", "Play", 0, QApplication::UnicodeUTF8));
-        pushButton_3->setText(QApplication::translate("MainWindow", "Stop", 0, QApplication::UnicodeUTF8));
+        pushButton->setText(QApplication::translate("MainWindow", "\342\226\262", 0, QApplication::UnicodeUTF8));
+        pushButton_2->setText(QApplication::translate("MainWindow", "\342\226\272", 0, QApplication::UnicodeUTF8));
+        pushButton_3->setText(QApplication::translate("MainWindow", "\342\226\240", 0, QApplication::UnicodeUTF8));
         label->setText(QString());
         label_2->setText(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -126,6 +134,8 @@ public:
         pushButton_4->setText(QApplication::translate("MainWindow", "EQ", 0, QApplication::UnicodeUTF8));
         pushButton_5->setText(QApplication::translate("MainWindow", "PL", 0, QApplication::UnicodeUTF8));
         pushButton_6->setText(QApplication::translate("MainWindow", "V", 0, QApplication::UnicodeUTF8));
+        pushButton_7->setText(QApplication::translate("MainWindow", "\342\226\272\342\226\272|", 0, QApplication::UnicodeUTF8));
+        pushButton_8->setText(QApplication::translate("MainWindow", "|\342\227\204\342\227\204", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

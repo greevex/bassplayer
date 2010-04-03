@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QList>
 #include <QFileInfo>
+#include <QTimer>
 #include "ui_pl.h"
 
 QT_BEGIN_NAMESPACE
@@ -23,9 +24,9 @@ public:
     void addTrack(QString path);
     void addPath(QString path);
     void next(QString file);
-    bool save(QString path);
     bool load(QString path);
     QString current();
+    QString path;
     void setCurrent(int pos);
     int getCurrent();
 
@@ -38,9 +39,12 @@ private:
     Ui::Pl *ui;
     QList<QString> *tracks;
     QList<QString> *names;
+    void select(int idx);
     int _curr;
+    QTimer *tmr;
 private slots:
     void trackClick(QListWidgetItem *qlwi);
+    bool save();
 signals:
             void changeTrack(QString);
 };
