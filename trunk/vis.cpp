@@ -56,7 +56,7 @@ void Vis::paintEvent(QPaintEvent *event){
             }
 
             if(h < this->pik[j]){
-                this->pik[j] = h;
+                this->pik[j] = h - 1;
             }
 
             j1 = j * 2;
