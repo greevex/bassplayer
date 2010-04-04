@@ -353,8 +353,34 @@ void Eq::setEQ()
     BASS_FXSetParameters(this->e14000, p14000);
     BASS_FXSetParameters(this->e15000, p15000);
     BASS_FXSetParameters(this->e16000, p16000);
-    delete p80, p120, p150, p200, p250, p300, p400, p500, p600, p700, p800, p900, p1000, p2000, p3000, p4000, p5000, p6000,
-        p7000, p8000, p9000, p10000, p11000, p12000, p13000, p14000, p15000, p16000;
+    delete p80;
+    delete p120;
+    delete p150;
+    delete p200;
+    delete p250;
+    delete p300;
+    delete p400;
+    delete p500;
+    delete p600;
+    delete p700;
+    delete p800;
+    delete p900;
+    delete p1000;
+    delete p2000;
+    delete p3000;
+    delete p4000;
+    delete p5000;
+    delete p6000;
+    delete p7000;
+    delete p8000;
+    delete p9000;
+    delete p10000;
+    delete p11000;
+    delete p12000;
+    delete p13000;
+    delete p14000;
+    delete p15000;
+    delete p16000;
 }
 void Eq::setEq()
 {

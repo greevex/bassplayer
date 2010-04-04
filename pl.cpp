@@ -1,7 +1,6 @@
 #include "pl.h"
 #include "ui_pl.h"
 #include "bass.h"
-#include <QDebug>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QUrl>
@@ -109,7 +108,6 @@ void Pl::next(QString file)
 {
     int pos = this->tracks->indexOf(file, 0)+1;
     int len = this->tracks->length();
-    qDebug() <<  pos << " " << len;
     if(pos == len)
         pos = 0;
     this->changeTrack(this->tracks->value(pos));
@@ -129,7 +127,6 @@ void Pl::setCurrent(int pos){
     if(pos >= this->tracks->length()){
         pos = 0;
     }
-    qDebug() << pos;
     this->_curr = pos;
     this->changeTrack(this->tracks->value(pos));
     this->select(pos);
@@ -137,6 +134,10 @@ void Pl::setCurrent(int pos){
 int Pl::getCurrent(){
     return this->_curr;
 }
+int Pl::getMax(){
+    return this->tracks->length() - 1;
+}
+
 void Pl::select(int idx){
     this->ui->listWidget->setItemSelected(this->ui->listWidget->item(idx), true);
     this->ui->listWidget->scrollToItem(this->ui->listWidget->item(idx), QAbstractItemView::PositionAtCenter);
@@ -181,7 +182,6 @@ bool Pl::load(QString path){
         }
         this->addTrack(str);
     }
-    qDebug() << file.errorString();
     file.close();
     return true;
 }

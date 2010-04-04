@@ -1,6 +1,5 @@
 #include "vis.h"
 #include "ui_vis.h"
-#include <QDebug>
 #include <QPainter>
 
 Vis::Vis(QWidget *parent) :

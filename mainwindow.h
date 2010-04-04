@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QSettings>
 #include <QTimer>
+#include <cstdlib>
+#include <time.h>
 #include "bass.h"
 #include "eq.h"
 #include "pl.h"
@@ -67,6 +69,7 @@ private:
     int _cstrct;
     bool _revscr;
     bool shuffle;
+    bool isMod;
     int repeatMode; // 0 - no repeat, 1 - repeat all, 2 - repeal one
     QString _cscr;
 private slots:
@@ -87,7 +90,9 @@ private slots:
     void next();
     void prew();
     void turnShuffle();
+    void turnShuffle(bool shuffle);
     void setRepeat();
+    void setRepeat(int mode);
 };
 
 #endif // MAINWINDOW_H

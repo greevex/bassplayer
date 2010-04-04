@@ -11,11 +11,14 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->_tstrl = 20;
     this->_cstrct = 0;
     this->duration = 0;
+    this->repeatMode = 0;
     this->_cscr = "";
     this->currplayed = "";
     this->lastPath = "./";
     this->_revscr = false;
     this->played = false;
+    this->isMod = false;
+    this->shuffle = false;
     this->conftimer = new QTimer(this);
     this->timer = new QTimer(this);
     this->titletimer = new QTimer(this);
@@ -47,15 +50,14 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event){
     menu.exec(event->globalPos());
 }
 void MainWindow::createActions(){
-    this->shuffleAction = new QAction("Shuffle", this);
-    this->shuffleAction->setShortcuts(QKeySequence::Replace);
+    this->shuffleAction = new QAction("&Shuffle", this);
+    this->shuffleAction->setShortcut(tr("Ctrl+Alt+H"));
     connect(this->shuffleAction, SIGNAL(triggered()), this, SLOT(turnShuffle()));
 
-    this->repeatAction = new QAction("Repeat", this);
-    this->repeatAction->setShortcuts(QKeySequence::New);
+    this->repeatAction = new QAction("&Repeat", this);
+    this->repeatAction->setShortcut(tr("Ctrl+Alt+R"));
     connect(this->repeatAction, SIGNAL(triggered()), this, SLOT(setRepeat()));
 }
-
 void MainWindow::setHand()
 {
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(openFile()));
@@ -93,16 +95,7 @@ void MainWindow::openFile()
         this->playlist->addTrack(file.value(i));
     if(!this->played)
     {
-        BASS_StreamFree(this->channel);
-        this->channel = BASS_StreamCreateFile(false, file.value(0).toLocal8Bit().constData(), 0, 0, 0);
-        this->stopping = false;
-        this->setVolume();
-        this->setDuration();
-        this->timer->start();
-        this->updateHFX();
-        this->eq->setEq();
-        this->playPause();
-        this->currplayed = file.value(0);
+        this->changeTrack(file.value(0));
     }
 }
 void MainWindow::playPause()
@@ -112,6 +105,7 @@ void MainWindow::playPause()
     else
     {
         if(this->stopping){
+            BASS_StreamFree(this->channel);
             this->stopping = false;
             this->changeTrack(this->playlist->current());
             return;
@@ -127,6 +121,7 @@ void MainWindow::playPause()
 void MainWindow::stop()
 {
     BASS_ChannelStop(this->channel);
+    BASS_StreamFree(this->channel);
     this->played = false;
     this->stopping = true;
     this->timer->stop();
@@ -157,10 +152,11 @@ void MainWindow::Update()
     QString time = QString().append(min).append(":").append(sec).append("/").append(dmin).append(":").append(dsec);
     this->ui->label->setText(time);
     this->vis->setChannel(this->channel);
+    this->setDuration();
 }
 void MainWindow::setDuration()
 {
-    QWORD l = BASS_ChannelGetLength(this->channel, BASS_POS_BYTE);
+    QWORD l = BASS_ChannelGetLength(this->channel, (this->isMod ? BASS_POS_MUSIC_ORDER : BASS_POS_BYTE));
     this->duration = (int)BASS_ChannelBytes2Seconds(this->channel, l);
     this->ui->horizontalSlider->setMaximum(this->duration);
 }
@@ -174,7 +170,7 @@ void MainWindow::setPosition(int pos){
     BASS_ChannelSetPosition(this->channel, pos1, BASS_POS_BYTE);
 }
 int MainWindow::getPosition(){
-    QWORD pos = BASS_ChannelGetPosition(this->channel, BASS_POS_BYTE);
+    QWORD pos = BASS_ChannelGetPosition(this->channel, (this->isMod ? BASS_POS_MUSIC_ORDER : BASS_POS_BYTE));
     return (int)BASS_ChannelBytes2Seconds(this->channel, pos);
 }
 void MainWindow::setVolume()
@@ -268,6 +264,8 @@ void MainWindow::saveConf()
     setting.setValue("PlayList", "./playlist.m3u");
     setting.setValue("LastPlayed", this->playlist->getCurrent());
     setting.setValue("LastPosition", this->getPosition());
+    setting.setValue("Shuffle", this->shuffle);
+    setting.setValue("Repeat", this->repeatMode);
 }
 void MainWindow::loadConf()
 {
@@ -334,6 +332,8 @@ void MainWindow::loadConf()
         this->playlist->path = setting.value("Playlist", "./playlist.m3u").toString();
         this->current = setting.value("LastPlayed", 0).toInt();
         this->_lstpos = setting.value("LastPosition", 0).toInt();
+        this->turnShuffle(setting.value("Shuffle", false).toBool());
+        this->setRepeat(setting.value("Repeat", 0).toInt());
     }
 }
 void MainWindow::resumePlay(){
@@ -341,23 +341,62 @@ void MainWindow::resumePlay(){
     this->setPosition(this->_lstpos);
 }
 void MainWindow::next(){
-    this->playlist->setCurrent(this->current + 1);
+    int trk = this->current + 1;
+    if(this->shuffle){
+        srand(time(NULL));
+        trk = rand() % this->playlist->getMax() + 1;
+    }
+    if(this->repeatMode == 0 && trk > this->playlist->getMax()){
+        this->stop();
+        return;
+    }
+    if(this->repeatMode == 2){
+        trk = this->current;
+    }
+    this->playlist->setCurrent(trk);
     this->current = this->playlist->getCurrent();
 }
 void MainWindow::prew(){
-    this->playlist->setCurrent(this->current - 1);
+    int trk = this->current - 1;
+    if(this->shuffle){
+        srand(time(NULL));
+        trk = rand() % this->playlist->getMax() + 1;
+    }
+    if(this->repeatMode == 0 && trk < 0){
+        this->stop();
+        return;
+    }
+    if(this->repeatMode == 2){
+        trk = this->current;
+    }
+    this->playlist->setCurrent(trk);
     this->current = this->playlist->getCurrent();
 }
-
 void MainWindow::changeTrack(QString str)
 {
+    if(this->isMod){
+        BASS_MusicFree(this->channel);
+        this->isMod = false;
+    }
+    else{
+        BASS_StreamFree(this->channel);
+    }
+    this->channel = BASS_StreamCreateFile(false, str.toLocal8Bit().constData(), 0, 0, BASS_STREAM_AUTOFREE);
+    if(BASS_ErrorGetCode() != BASS_OK){
+        BASS_StreamFree(this->channel);
+        this->channel = BASS_MusicLoad(false, str.toLocal8Bit(), 0, 0, BASS_MUSIC_AUTOFREE, 44100);
+        if(BASS_ErrorGetCode() != BASS_OK){
+            BASS_StreamFree(this->channel);
+            return;
+        }
+        this->isMod = true;
+    }
     this->currplayed = str;
-    BASS_StreamFree(this->channel);
-    if(!(this->channel = BASS_StreamCreateFile(false, str.toLocal8Bit().constData(), 0, 0, 0)))
-        return;
     this->setVolume();
     this->setDuration();
-    this->timer->start();
+    if(!this->timer->isActive()){
+        this->timer->start();
+    }
     this->updateHFX();
     this->eq->setEq();
     this->stopping = false;
@@ -443,7 +482,6 @@ void MainWindow::setStyle(QString file){
         f.close();
         return;
     }
-    qDebug() << "stylesheet file not found...";
 }
 void MainWindow::showVis(bool vis){
     if(vis){
@@ -465,9 +503,44 @@ void MainWindow::toggleVis(){
         this->ui->pushButton_6->setStyleSheet("color: red;");
     }
 }
-void MainWindow::turnShuffle(){
+void MainWindow::turnShuffle(bool shuffl){
     qDebug() << "turn shuffle...";
+    if(!shuffl){
+        this->shuffle = false;
+        this->ui->label_4->setStyleSheet("color: #aaa;");
+    }
+    else{
+        this->shuffle = true;
+        this->ui->label_4->setStyleSheet("color: #000;");
+    }
 }
+void MainWindow::turnShuffle(){
+    this->turnShuffle(!this->shuffle);
+}
+
 void MainWindow::setRepeat(){
     qDebug() << "set repeat";
+    this->setRepeat(this->repeatMode + 1);
+}
+void MainWindow::setRepeat(int mode){
+    switch(mode){
+    case 0:
+        this->repeatMode = 0;
+        this->ui->label_5->setStyleSheet("color: #aaa");
+        this->ui->label_5->setText("R");
+        break;
+    case 1:
+        this->repeatMode = 1;
+        this->ui->label_5->setStyleSheet("color: #000");
+        this->ui->label_5->setText("R");
+        break;
+    case 2:
+        this->repeatMode = 2;
+        this->ui->label_5->setStyleSheet("color: #000");
+        this->ui->label_5->setText("1");
+        break;
+    default:
+        this->setRepeat(0);
+        break;
+    }
 }
