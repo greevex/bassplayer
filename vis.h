@@ -27,7 +27,6 @@ private:
     HSTREAM chan;
     float fft[2048];
     int pik[128];
-    void drawLine(QPainter &paint, int x, int y1, int y2, int sr, int sg, int sb, int er, int eg, int eb);
 };
 
 #endif // VIS_H

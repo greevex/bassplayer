@@ -135,33 +135,27 @@ void MainWindow::Update()
 {
     if(BASS_ChannelIsActive(this->channel) == BASS_ACTIVE_STOPPED && !this->stopping)
     {
-        qDebug() << "next track";
         this->next();
     }
     int currPos = this->getPosition();
     this->ui->horizontalSlider->setValue(currPos);
     //current position
-    QString *min = new QString();
-    min->setNum((currPos / 60));
-    QString *sec = new QString();
-    sec->setNum((currPos % 60));
-    if(min->size() == 1)
-        min->prepend("0");
-    if(sec->size() == 1)
-        sec->prepend("0");
+    QString min = QString().setNum((currPos / 60));
+    QString sec = QString().setNum((currPos % 60));
+    if(min.size() == 1)
+        min.prepend("0");
+    if(sec.size() == 1)
+        sec.prepend("0");
     //duration
-    QString *dmin = new QString();
-    dmin->setNum(this->duration / 60);
-    QString *dsec = new QString();
-    dsec->setNum(this->duration % 60);
-    if(dmin->size() == 1)
-        dmin->prepend("0");
-    if(dsec->size() == 1)
-        dsec->prepend("0");
+    QString dmin = QString().setNum(this->duration / 60);
+    QString dsec = QString().setNum(this->duration % 60);
+    if(dmin.size() == 1)
+        dmin.prepend("0");
+    if(dsec.size() == 1)
+        dsec.prepend("0");
     //
-    QString *time = new QString();
-    time->append(min).append(":").append(sec).append("/").append(dmin).append(":").append(dsec);
-    this->ui->label->setText(*time);
+    QString time = QString().append(min).append(":").append(sec).append("/").append(dmin).append(":").append(dsec);
+    this->ui->label->setText(time);
     this->vis->setChannel(this->channel);
 }
 void MainWindow::setDuration()
@@ -226,106 +220,104 @@ void MainWindow::updateHFX()
 }
 void MainWindow::saveConf()
 {
-    this->setting = new QSettings("./setting.ini", QSettings::IniFormat, this);
-    this->setting->setValue("Conf", 1);
-    this->setting->setValue("Volume", ui->horizontalSlider_2->value());
-    this->setting->setValue("Pan", this->ui->horizontalSlider_3->value());
-    this->setting->setValue("X", this->x());
-    this->setting->setValue("Y", this->y());
-    this->setting->setValue("LastPath", this->lastPath);
-    this->setting->setValue("Eq1", this->eq->getEq(80));
-    this->setting->setValue("Eq2", this->eq->getEq(120));
-    this->setting->setValue("Eq3", this->eq->getEq(150));
-    this->setting->setValue("Eq4", this->eq->getEq(200));
-    this->setting->setValue("Eq5", this->eq->getEq(250));
-    this->setting->setValue("Eq6", this->eq->getEq(300));
-    this->setting->setValue("Eq7", this->eq->getEq(400));
-    this->setting->setValue("Eq8", this->eq->getEq(500));
-    this->setting->setValue("Eq9", this->eq->getEq(600));
-    this->setting->setValue("Eq10", this->eq->getEq(700));
-    this->setting->setValue("Eq11", this->eq->getEq(800));
-    this->setting->setValue("Eq12", this->eq->getEq(900));
-    this->setting->setValue("Eq13", this->eq->getEq(1000));
-    this->setting->setValue("Eq14", this->eq->getEq(2000));
-    this->setting->setValue("Eq15", this->eq->getEq(3000));
-    this->setting->setValue("Eq16", this->eq->getEq(4000));
-    this->setting->setValue("Eq17", this->eq->getEq(5000));
-    this->setting->setValue("Eq18", this->eq->getEq(6000));
-    this->setting->setValue("Eq19", this->eq->getEq(7000));
-    this->setting->setValue("Eq20", this->eq->getEq(8000));
-    this->setting->setValue("Eq21", this->eq->getEq(9000));
-    this->setting->setValue("Eq22", this->eq->getEq(10000));
-    this->setting->setValue("Eq23", this->eq->getEq(11000));
-    this->setting->setValue("Eq24", this->eq->getEq(12000));
-    this->setting->setValue("Eq25", this->eq->getEq(13000));
-    this->setting->setValue("Eq26", this->eq->getEq(14000));
-    this->setting->setValue("Eq27", this->eq->getEq(15000));
-    this->setting->setValue("Eq28", this->eq->getEq(16000));
-    this->setting->setValue("ShowEQ", this->eq->isVisible());
-    this->setting->setValue("ShowPL", this->playlist->isVisible());
-    this->setting->setValue("ShowVis", this->vis->isVisible());
-    this->setting->setValue("EqPosX", this->eq->x());
-    this->setting->setValue("EqPosY", this->eq->y());
-    this->setting->setValue("PlPosX", this->playlist->x());
-    this->setting->setValue("PlPosY", this->playlist->y());
-    this->setting->setValue("VisPosX", this->vis->x());
-    this->setting->setValue("VisPosY", this->vis->y());
-    this->setting->setValue("Style", this->style);
-    this->setting->setValue("PlayList", "./playlist.m3u");
-    this->setting->setValue("LastPlayed", this->playlist->getCurrent());
-    this->setting->setValue("LastPosition", this->getPosition());
-    delete this->setting;
+    QSettings setting("./setting.ini", QSettings::IniFormat, this);
+    setting.setValue("Conf", 1);
+    setting.setValue("Volume", ui->horizontalSlider_2->value());
+    setting.setValue("Pan", this->ui->horizontalSlider_3->value());
+    setting.setValue("X", this->x());
+    setting.setValue("Y", this->y());
+    setting.setValue("LastPath", this->lastPath);
+    setting.setValue("Eq1", this->eq->getEq(80));
+    setting.setValue("Eq2", this->eq->getEq(120));
+    setting.setValue("Eq3", this->eq->getEq(150));
+    setting.setValue("Eq4", this->eq->getEq(200));
+    setting.setValue("Eq5", this->eq->getEq(250));
+    setting.setValue("Eq6", this->eq->getEq(300));
+    setting.setValue("Eq7", this->eq->getEq(400));
+    setting.setValue("Eq8", this->eq->getEq(500));
+    setting.setValue("Eq9", this->eq->getEq(600));
+    setting.setValue("Eq10", this->eq->getEq(700));
+    setting.setValue("Eq11", this->eq->getEq(800));
+    setting.setValue("Eq12", this->eq->getEq(900));
+    setting.setValue("Eq13", this->eq->getEq(1000));
+    setting.setValue("Eq14", this->eq->getEq(2000));
+    setting.setValue("Eq15", this->eq->getEq(3000));
+    setting.setValue("Eq16", this->eq->getEq(4000));
+    setting.setValue("Eq17", this->eq->getEq(5000));
+    setting.setValue("Eq18", this->eq->getEq(6000));
+    setting.setValue("Eq19", this->eq->getEq(7000));
+    setting.setValue("Eq20", this->eq->getEq(8000));
+    setting.setValue("Eq21", this->eq->getEq(9000));
+    setting.setValue("Eq22", this->eq->getEq(10000));
+    setting.setValue("Eq23", this->eq->getEq(11000));
+    setting.setValue("Eq24", this->eq->getEq(12000));
+    setting.setValue("Eq25", this->eq->getEq(13000));
+    setting.setValue("Eq26", this->eq->getEq(14000));
+    setting.setValue("Eq27", this->eq->getEq(15000));
+    setting.setValue("Eq28", this->eq->getEq(16000));
+    setting.setValue("ShowEQ", this->eq->isVisible());
+    setting.setValue("ShowPL", this->playlist->isVisible());
+    setting.setValue("ShowVis", this->vis->isVisible());
+    setting.setValue("EqPosX", this->eq->x());
+    setting.setValue("EqPosY", this->eq->y());
+    setting.setValue("PlPosX", this->playlist->x());
+    setting.setValue("PlPosY", this->playlist->y());
+    setting.setValue("VisPosX", this->vis->x());
+    setting.setValue("VisPosY", this->vis->y());
+    setting.setValue("Style", this->style);
+    setting.setValue("PlayList", "./playlist.m3u");
+    setting.setValue("LastPlayed", this->playlist->getCurrent());
+    setting.setValue("LastPosition", this->getPosition());
 }
 void MainWindow::loadConf()
 {
 
-    this->setting = new QSettings("./setting.ini", QSettings::IniFormat, this);
-    if(this->setting->value("Conf", QVariant::Int).toInt() == 1)
+    QSettings setting("./setting.ini", QSettings::IniFormat, this);
+    if(setting.value("Conf", QVariant::Int).toInt() == 1)
     {
-        this->move(this->setting->value("X", 0).toInt(), this->setting->value("Y", 0).toInt());
-        this->ui->horizontalSlider_2->setValue(this->setting->value("Volume", 20).toInt());
-        this->ui->horizontalSlider_3->setValue(this->setting->value("Pan", 10).toInt());
-        this->lastPath = this->setting->value("LastPath", "./").toString();
-        this->eq->setEq(80, this->setting->value("Eq1", 150).toInt());
-        this->eq->setEq(120, this->setting->value("Eq2", 150).toInt());
-        this->eq->setEq(150, this->setting->value("Eq3", 150).toInt());
-        this->eq->setEq(200, this->setting->value("Eq4", 150).toInt());
-        this->eq->setEq(250, this->setting->value("Eq5", 150).toInt());
-        this->eq->setEq(300, this->setting->value("Eq6", 150).toInt());
-        this->eq->setEq(400, this->setting->value("Eq7", 150).toInt());
-        this->eq->setEq(500, this->setting->value("Eq8", 150).toInt());
-        this->eq->setEq(600, this->setting->value("Eq9", 150).toInt());
-        this->eq->setEq(700, this->setting->value("Eq10", 150).toInt());
-        this->eq->setEq(800, this->setting->value("Eq11", 150).toInt());
-        this->eq->setEq(900, this->setting->value("Eq12", 150).toInt());
-        this->eq->setEq(1000, this->setting->value("Eq13", 150).toInt());
-        this->eq->setEq(2000, this->setting->value("Eq14", 150).toInt());
-        this->eq->setEq(3000, this->setting->value("Eq15", 150).toInt());
-        this->eq->setEq(4000, this->setting->value("Eq16", 150).toInt());
-        this->eq->setEq(5000, this->setting->value("Eq17", 150).toInt());
-        this->eq->setEq(6000, this->setting->value("Eq18", 150).toInt());
-        this->eq->setEq(7000, this->setting->value("Eq19", 150).toInt());
-        this->eq->setEq(8000, this->setting->value("Eq20", 150).toInt());
-        this->eq->setEq(9000, this->setting->value("Eq21", 150).toInt());
-        this->eq->setEq(10000, this->setting->value("Eq22", 150).toInt());
-        this->eq->setEq(11000, this->setting->value("Eq23", 150).toInt());
-        this->eq->setEq(12000, this->setting->value("Eq24", 150).toInt());
-        this->eq->setEq(13000, this->setting->value("Eq25", 150).toInt());
-        this->eq->setEq(14000, this->setting->value("Eq26", 150).toInt());
-        this->eq->setEq(15000, this->setting->value("Eq27", 150).toInt());
-        this->eq->setEq(16000, this->setting->value("Eq28", 150).toInt());
-        this->showEq(this->setting->value("ShowEQ", false).toBool());
-        this->showPl(this->setting->value("ShowPL", false).toBool());
-        this->showVis(this->setting->value("ShowVis", false).toBool());
-        this->eq->move(this->setting->value("EqPosX", 0).toInt(), this->setting->value("EqPosY", 0).toInt());
-        this->playlist->move(this->setting->value("PlPosX", 0).toInt(), this->setting->value("PlPosY", 0).toInt());
-        this->vis->move(this->setting->value("VisPosX", 0).toInt(), this->setting->value("VisPosY", 0).toInt());
-        this->style = this->setting->value("Style", "./style.css").toString();
-        this->playlist->path = this->setting->value("Playlist", "./playlist.m3u").toString();
-        this->current = this->setting->value("LastPlayed", 0).toInt();
-        this->_lstpos = this->setting->value("LastPosition", 0).toInt();
+        this->move(setting.value("X", 0).toInt(), setting.value("Y", 0).toInt());
+        this->ui->horizontalSlider_2->setValue(setting.value("Volume", 20).toInt());
+        this->ui->horizontalSlider_3->setValue(setting.value("Pan", 10).toInt());
+        this->lastPath = setting.value("LastPath", "./").toString();
+        this->eq->setEq(80, setting.value("Eq1", 150).toInt());
+        this->eq->setEq(120, setting.value("Eq2", 150).toInt());
+        this->eq->setEq(150, setting.value("Eq3", 150).toInt());
+        this->eq->setEq(200, setting.value("Eq4", 150).toInt());
+        this->eq->setEq(250, setting.value("Eq5", 150).toInt());
+        this->eq->setEq(300, setting.value("Eq6", 150).toInt());
+        this->eq->setEq(400, setting.value("Eq7", 150).toInt());
+        this->eq->setEq(500, setting.value("Eq8", 150).toInt());
+        this->eq->setEq(600, setting.value("Eq9", 150).toInt());
+        this->eq->setEq(700, setting.value("Eq10", 150).toInt());
+        this->eq->setEq(800, setting.value("Eq11", 150).toInt());
+        this->eq->setEq(900, setting.value("Eq12", 150).toInt());
+        this->eq->setEq(1000, setting.value("Eq13", 150).toInt());
+        this->eq->setEq(2000, setting.value("Eq14", 150).toInt());
+        this->eq->setEq(3000, setting.value("Eq15", 150).toInt());
+        this->eq->setEq(4000, setting.value("Eq16", 150).toInt());
+        this->eq->setEq(5000, setting.value("Eq17", 150).toInt());
+        this->eq->setEq(6000, setting.value("Eq18", 150).toInt());
+        this->eq->setEq(7000, setting.value("Eq19", 150).toInt());
+        this->eq->setEq(8000, setting.value("Eq20", 150).toInt());
+        this->eq->setEq(9000, setting.value("Eq21", 150).toInt());
+        this->eq->setEq(10000, setting.value("Eq22", 150).toInt());
+        this->eq->setEq(11000, setting.value("Eq23", 150).toInt());
+        this->eq->setEq(12000, setting.value("Eq24", 150).toInt());
+        this->eq->setEq(13000, setting.value("Eq25", 150).toInt());
+        this->eq->setEq(14000, setting.value("Eq26", 150).toInt());
+        this->eq->setEq(15000, setting.value("Eq27", 150).toInt());
+        this->eq->setEq(16000, setting.value("Eq28", 150).toInt());
+        this->showEq(setting.value("ShowEQ", false).toBool());
+        this->showPl(setting.value("ShowPL", false).toBool());
+        this->showVis(setting.value("ShowVis", false).toBool());
+        this->eq->move(setting.value("EqPosX", 0).toInt(), setting.value("EqPosY", 0).toInt());
+        this->playlist->move(setting.value("PlPosX", 0).toInt(), setting.value("PlPosY", 0).toInt());
+        this->vis->move(setting.value("VisPosX", 0).toInt(), setting.value("VisPosY", 0).toInt());
+        this->style = setting.value("Style", "./style.css").toString();
+        this->playlist->path = setting.value("Playlist", "./playlist.m3u").toString();
+        this->current = setting.value("LastPlayed", 0).toInt();
+        this->_lstpos = setting.value("LastPosition", 0).toInt();
     }
-    delete this->setting;
 }
 void MainWindow::resumePlay(){
     this->playlist->setCurrent(this->current);
@@ -364,8 +356,7 @@ void MainWindow::setTitle(){
     if(_cscr.indexOf('/') == -1){
         return;
     }
-    QStringList namelist = this->_cscr.split('/', QString::SkipEmptyParts);
-    QString name = namelist.last();
+    QString name = this->_cscr.split('/', QString::SkipEmptyParts).last();
     int len = name.length();
     if(len > this->_tstrl){
         if(!this->_revscr){
