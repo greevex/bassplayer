@@ -19,6 +19,7 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->played = false;
     this->isMod = false;
     this->shuffle = false;
+    this->shuffled = NULL;
     this->conftimer = new QTimer(this);
     this->timer = new QTimer(this);
     this->titletimer = new QTimer(this);
@@ -362,8 +363,15 @@ void MainWindow::resumePlay(){
 void MainWindow::next(){
     int trk = this->current + 1;
     if(this->shuffle){
-        srand(time(NULL));
-        trk = rand() % this->playlist->getMax() + 1;
+        int pos;
+        if((pos = this->shuffled->indexOf(trk - 1, 0)) == -1 || this->shuffled->length() == pos + 1){
+            srand(time(NULL));
+            trk = rand() % this->playlist->getMax() + 1;
+            this->shuffled->append(trk);
+        }
+        else{
+            trk = this->shuffled->value(pos + 1);
+        }
     }
     if(this->repeatMode == 0 && trk > this->playlist->getMax()){
         this->stop();
@@ -378,8 +386,15 @@ void MainWindow::next(){
 void MainWindow::prew(){
     int trk = this->current - 1;
     if(this->shuffle){
-        srand(time(NULL));
-        trk = rand() % this->playlist->getMax() + 1;
+        int pos;
+        if((pos = this->shuffled->indexOf(trk + 1, 0)) == -1 ||  pos - 1 < 0){
+            srand(time(NULL));
+            trk = rand() % this->playlist->getMax() + 1;
+            this->shuffled->prepend(trk);
+        }
+        else{
+            trk = this->shuffled->value(pos - 1);
+        }
     }
     if(this->repeatMode == 0 && trk < 0){
         this->stop();
@@ -527,10 +542,14 @@ void MainWindow::turnShuffle(bool shuffl){
     if(!shuffl){
         this->shuffle = false;
         this->ui->label_4->setStyleSheet("color: #aaa;");
+        if(this->shuffled != NULL){
+            delete this->shuffled;
+        }
     }
     else{
         this->shuffle = true;
         this->ui->label_4->setStyleSheet("color: #000;");
+        this->shuffled = new QList<int>();
     }
 }
 void MainWindow::turnShuffle(){

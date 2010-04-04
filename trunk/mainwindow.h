@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QSettings>
 #include <QTimer>
+#include <QList>
 #include <cstdlib>
 #include <time.h>
 #include "bass.h"
@@ -63,6 +64,7 @@ private:
     QString lastPath;
     QString currplayed;
     QString style;
+    QList<int> *shuffled;
     int current;
     int _lstpos; //last position
     int _tstrl;
