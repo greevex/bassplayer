@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Sun 4. Apr 06:32:15 2010
+** Created: Sun 4. Apr 09:59:46 2010
 **      by: Qt User Interface Compiler version 4.6.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -41,6 +41,8 @@ public:
     QPushButton *pushButton_6;
     QPushButton *pushButton_7;
     QPushButton *pushButton_8;
+    QLabel *label_4;
+    QLabel *label_5;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -111,6 +113,14 @@ public:
         pushButton_8 = new QPushButton(centralWidget);
         pushButton_8->setObjectName(QString::fromUtf8("pushButton_8"));
         pushButton_8->setGeometry(QRect(260, 20, 31, 23));
+        label_4 = new QLabel(centralWidget);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+        label_4->setGeometry(QRect(180, 24, 16, 16));
+        label_4->setStyleSheet(QString::fromUtf8("color: #aaa;"));
+        label_5 = new QLabel(centralWidget);
+        label_5->setObjectName(QString::fromUtf8("label_5"));
+        label_5->setGeometry(QRect(200, 24, 21, 16));
+        label_5->setStyleSheet(QString::fromUtf8("color: #aaa;"));
         MainWindow->setCentralWidget(centralWidget);
 
         retranslateUi(MainWindow);
@@ -136,6 +146,8 @@ public:
         pushButton_6->setText(QApplication::translate("MainWindow", "V", 0, QApplication::UnicodeUTF8));
         pushButton_7->setText(QApplication::translate("MainWindow", "\342\226\272\342\226\272|", 0, QApplication::UnicodeUTF8));
         pushButton_8->setText(QApplication::translate("MainWindow", "|\342\227\204\342\227\204", 0, QApplication::UnicodeUTF8));
+        label_4->setText(QApplication::translate("MainWindow", "S", 0, QApplication::UnicodeUTF8));
+        label_5->setText(QApplication::translate("MainWindow", "R", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

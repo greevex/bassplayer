@@ -21,6 +21,7 @@ public:
 
 protected:
     void changeEvent(QEvent *e);
+    void contextMenuEvent(QContextMenuEvent *event);
 
 private:
     Ui::MainWindow *ui;
@@ -45,6 +46,9 @@ private:
     void showVis(bool vis);
     void setStyle(QString file);
     void resumePlay();
+    void createActions();
+    QAction *shuffleAction;
+    QAction *repeatAction;
     HFX hand80;
     HFX hand170;
     HFX hand300;
@@ -63,6 +67,8 @@ private:
     int _tstrl;
     int _cstrct;
     bool _revscr;
+    bool shuffle;
+    int repeatMode; // 0 - no repeat, 1 - repeat all, 2 - repeal one
     QString _cscr;
 private slots:
     void openFile();
@@ -81,6 +87,8 @@ private slots:
     void changeTrack(QString str);
     void next();
     void prew();
+    void turnShuffle();
+    void setRepeat();
 };
 
 #endif // MAINWINDOW_H

@@ -16,7 +16,6 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->lastPath = "./";
     this->_revscr = false;
     this->played = false;
-    this->setting = new QSettings("./setting.ini", QSettings::IniFormat, this);
     this->conftimer = new QTimer(this);
     this->timer = new QTimer(this);
     this->titletimer = new QTimer(this);
@@ -33,6 +32,7 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->stopping = true;
     this->setStyle(this->style);
     this->playlist->load(this->playlist->path);
+    this->createActions();
     this->resumePlay();
 }
 
@@ -40,6 +40,22 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+void MainWindow::contextMenuEvent(QContextMenuEvent *event){
+    QMenu menu(this);
+    menu.addAction(this->shuffleAction);
+    menu.addAction(this->repeatAction);
+    menu.exec(event->globalPos());
+}
+void MainWindow::createActions(){
+    this->shuffleAction = new QAction("Shuffle", this);
+    this->shuffleAction->setShortcuts(QKeySequence::Replace);
+    connect(this->shuffleAction, SIGNAL(triggered()), this, SLOT(turnShuffle()));
+
+    this->repeatAction = new QAction("Repeat", this);
+    this->repeatAction->setShortcuts(QKeySequence::New);
+    connect(this->repeatAction, SIGNAL(triggered()), this, SLOT(setRepeat()));
+}
+
 void MainWindow::setHand()
 {
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(openFile()));
@@ -210,6 +226,7 @@ void MainWindow::updateHFX()
 }
 void MainWindow::saveConf()
 {
+    this->setting = new QSettings("./setting.ini", QSettings::IniFormat, this);
     this->setting->setValue("Conf", 1);
     this->setting->setValue("Volume", ui->horizontalSlider_2->value());
     this->setting->setValue("Pan", this->ui->horizontalSlider_3->value());
@@ -257,9 +274,12 @@ void MainWindow::saveConf()
     this->setting->setValue("PlayList", "./playlist.m3u");
     this->setting->setValue("LastPlayed", this->playlist->getCurrent());
     this->setting->setValue("LastPosition", this->getPosition());
+    delete this->setting;
 }
 void MainWindow::loadConf()
 {
+
+    this->setting = new QSettings("./setting.ini", QSettings::IniFormat, this);
     if(this->setting->value("Conf", QVariant::Int).toInt() == 1)
     {
         this->move(this->setting->value("X", 0).toInt(), this->setting->value("Y", 0).toInt());
@@ -305,6 +325,7 @@ void MainWindow::loadConf()
         this->current = this->setting->value("LastPlayed", 0).toInt();
         this->_lstpos = this->setting->value("LastPosition", 0).toInt();
     }
+    delete this->setting;
 }
 void MainWindow::resumePlay(){
     this->playlist->setCurrent(this->current);
@@ -435,4 +456,10 @@ void MainWindow::toggleVis(){
         this->vis->show();
         this->ui->pushButton_6->setStyleSheet("color: red;");
     }
+}
+void MainWindow::turnShuffle(){
+    qDebug() << "turn shuffle...";
+}
+void MainWindow::setRepeat(){
+    qDebug() << "set repeat";
 }
