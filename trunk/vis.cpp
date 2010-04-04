@@ -16,6 +16,9 @@ Vis::Vis(QWidget *parent) :
     for(int i = 0; i < 128; i++){
         this->pik[i] = 0;
     }
+    this->bcol = new QColor(0x00, 0x00, 0x00);
+    this->pcol = new QColor(0xff, 0x00, 0x00);
+    this->mcol = new QColor(0x00, 0xff, 0x00);
     ui->setupUi(this);
 }
 
@@ -25,6 +28,11 @@ Vis::~Vis()
 }
 void Vis::setChannel(HSTREAM chan){
     this->chan = chan;
+}
+void Vis::setColor(QColor back, QColor pik, QColor main){
+    *(this->bcol) = back;
+    *(this->mcol) = main;
+    *(this->pcol) = pik;
 }
 
 void Vis::changeEvent(QEvent *e)
@@ -41,8 +49,8 @@ void Vis::changeEvent(QEvent *e)
 void Vis::paintEvent(QPaintEvent *event){
     if(this->isVisible()){
         QPainter paint(this);
-        paint.fillRect(0, 0, this->width(), this->height(), QColor(0x00, 0x00, 0x00));
-        paint.setPen(QColor(0xc0, 0xc0, 0xf0));
+        paint.fillRect(0, 0, this->width(), this->height(), *(this->bcol));
+        paint.setPen(*(this->mcol));
         BASS_ChannelGetData(this->chan, fft, BASS_DATA_FFT4096); //получение даных БФП
         float c = 0;
         int h = 0;
@@ -72,7 +80,7 @@ void Vis::paintEvent(QPaintEvent *event){
         for(int k = 0; k < 128; k++){
             this->pik[k]+=2;
         }
-        paint.setPen(QColor(0xff, 0x00, 0x00));
+        paint.setPen(*(this->pcol));
         for(int k = 0; k < 128; k++){
             paint.drawPoint(k * 2, this->pik[k]);
             paint.drawPoint(k * 2 + 1, this->pik[k]);

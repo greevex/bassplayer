@@ -16,6 +16,7 @@ public:
     Vis(QWidget *parent = 0);
     ~Vis();
     void setChannel(HSTREAM chan);
+    void setColor(QColor back, QColor pik, QColor main);
 
 protected:
     void changeEvent(QEvent *e);
@@ -27,6 +28,9 @@ private:
     HSTREAM chan;
     float fft[2048];
     int pik[128];
+    QColor *bcol;
+    QColor *pcol;
+    QColor *mcol;
 };
 
 #endif // VIS_H
