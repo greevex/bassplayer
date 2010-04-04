@@ -2,6 +2,8 @@
 #define EQ_H
 
 #include <QDialog>
+#include <QContextMenuEvent>
+#include <QMenu>
 #include "bass.h"
 
 namespace Ui {
@@ -16,13 +18,15 @@ public:
     void setEq();
     int getEq(int Hz);
     void setEq(int Hz, int value);
+    float getGain(int val);
 
 protected:
     void changeEvent(QEvent *e);
+    void contextMenuEvent(QContextMenuEvent *event);
 
 private:
     Ui::Eq *ui;
-    float getGain(int val);
+    QAction *resetAction;
 public:
     HFX e80;
     HFX e120;
@@ -54,6 +58,7 @@ public:
     HFX e16000;
 private slots:
     void setEQ();
+    void reset();
 };
 
 #endif // EQ_H
