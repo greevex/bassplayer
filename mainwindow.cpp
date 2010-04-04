@@ -313,6 +313,23 @@ void MainWindow::loadConf()
         this->eq->move(setting.value("EqPosX", 0).toInt(), setting.value("EqPosY", 0).toInt());
         this->playlist->move(setting.value("PlPosX", 0).toInt(), setting.value("PlPosY", 0).toInt());
         this->vis->move(setting.value("VisPosX", 0).toInt(), setting.value("VisPosY", 0).toInt());
+        this->vis->setColor(
+                 QColor(
+                        setting.value("BR", 0).toInt(),
+                        setting.value("BG", 0).toInt(),
+                        setting.value("BB", 0).toInt()
+                        ),
+                 QColor(
+                        setting.value("PR", 0xff).toInt(),
+                        setting.value("PG", 0).toInt(),
+                        setting.value("PB", 0).toInt()
+                        ),
+                 QColor(
+                        setting.value("MR", 0).toInt(),
+                        setting.value("MG", 0xff).toInt(),
+                        setting.value("MB", 0).toInt()
+                        )
+                );
         this->style = setting.value("Style", "./style.css").toString();
         this->playlist->path = setting.value("Playlist", "./playlist.m3u").toString();
         this->current = setting.value("LastPlayed", 0).toInt();
