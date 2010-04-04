@@ -82,6 +82,7 @@ void Pl::addTrack(QString path)
     this->names->append(f->fileName());
     QListWidgetItem *trk = new QListWidgetItem(this->ui->listWidget);
     trk->setText(this->names->last());
+    delete f;
 }
 void Pl::addPath(QString path){
     QDir dir(path);
@@ -143,7 +144,6 @@ void Pl::select(int idx){
 
 bool Pl::save(){
     if(path.isEmpty()){
-        qDebug() << "save false...";
         return false;
     }
     if(this->tracks->length() < 1){
@@ -163,18 +163,15 @@ bool Pl::save(){
 }
 bool Pl::load(QString path){
     if(path.isEmpty()){
-        qDebug() << "load false";
         return false;
     }
     QFile file(path);
     if(!file.exists()){
-        qDebug() << "file not found...";
         return false;
     }
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     file.setTextModeEnabled(true);
     if(!file.isOpen()){
-        qDebug() << "File is not open...";
     }
     QString str;
     while(file.bytesAvailable() > 0){

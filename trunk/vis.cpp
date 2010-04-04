@@ -39,6 +39,7 @@ void Vis::changeEvent(QEvent *e)
     }
 }
 void Vis::paintEvent(QPaintEvent *event){
+    if(this->isVisible()){
         QPainter paint(this);
         paint.fillRect(0, 0, this->width(), this->height(), QColor(0x00, 0x00, 0x00));
         paint.setPen(QColor(0xc0, 0xc0, 0xf0));
@@ -76,26 +77,6 @@ void Vis::paintEvent(QPaintEvent *event){
             paint.drawPoint(k * 2, this->pik[k]);
             paint.drawPoint(k * 2 + 1, this->pik[k]);
         }
-}
-void Vis::drawLine(QPainter &paint, int x, int y1, int y2, int sr, int sg, int sb, int er, int eg, int eb){
-    int yi = 1;
-    int y3 = y1;
-    int tff = 255;
-    float gl = (255 / y1) * -1;
-    if(y1 > y2){
-        yi = -1;
-    }
-    for(int i = 0; i < 2; i++){
-        for(y1; y1 > (y2 + yi); y1+= yi, tff+=gl){
-            paint.setPen(QColor(sr, sg, sb, (int)tff));
-            paint.drawPoint(x, y1);
-            paint.drawPoint(x + 1, y1);
-        }
-        y1 = y3;
-        sr = er;
-        sg = eg;
-        sb = eb;
-        gl = gl * -1;
-        tff = 0;
+        delete fft;
     }
 }

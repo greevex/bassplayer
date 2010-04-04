@@ -8,14 +8,10 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     eq.cpp \
     pl.cpp \
-    playlist.cpp \
-    track.cpp \
     vis.cpp
 HEADERS += mainwindow.h \
     eq.h \
     pl.h \
-    playlist.h \
-    track.h \
     vis.h
 FORMS += mainwindow.ui \
     eq.ui \

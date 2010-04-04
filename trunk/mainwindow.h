@@ -61,7 +61,6 @@ private:
     QString lastPath;
     QString currplayed;
     QString style;
-    QSettings *setting;
     int current;
     int _lstpos; //last position
     int _tstrl;
