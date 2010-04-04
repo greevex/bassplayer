@@ -185,6 +185,25 @@ void MainWindow::setPan()
 }
 void MainWindow::updateHFX()
 {
+    //срезание низких частот
+    BASS_DX8_PARAMEQ *eq1 = new BASS_DX8_PARAMEQ();
+    BASS_DX8_PARAMEQ *eq2 = new BASS_DX8_PARAMEQ();
+    BASS_DX8_PARAMEQ *eq3 = new BASS_DX8_PARAMEQ();
+    eq1->fBandwidth = 20;
+    eq1->fCenter = 80;
+    eq1->fGain = -3.5;
+    eq2->fBandwidth = 10;
+    eq2->fCenter = 95;
+    eq2->fGain = -2.5;
+    eq3->fBandwidth = 20;
+    eq3->fCenter = 110;
+    eq3->fGain = -1;
+    BASS_FXSetParameters(BASS_ChannelSetFX(this->channel, BASS_FX_DX8_PARAMEQ, 1), eq1);
+    BASS_FXSetParameters(BASS_ChannelSetFX(this->channel, BASS_FX_DX8_PARAMEQ, 1), eq2);
+    BASS_FXSetParameters(BASS_ChannelSetFX(this->channel, BASS_FX_DX8_PARAMEQ, 1), eq3);
+    delete eq1;
+    delete eq2;
+    delete eq3;
     this->eq->e80 = BASS_ChannelSetFX(this->channel, BASS_FX_DX8_PARAMEQ, 1);
     this->eq->e120 = BASS_ChannelSetFX(this->channel, BASS_FX_DX8_PARAMEQ, 1);
     this->eq->e150 = BASS_ChannelSetFX(this->channel, BASS_FX_DX8_PARAMEQ, 1);
@@ -517,7 +536,6 @@ void MainWindow::turnShuffle(bool shuffl){
 void MainWindow::turnShuffle(){
     this->turnShuffle(!this->shuffle);
 }
-
 void MainWindow::setRepeat(){
     qDebug() << "set repeat";
     this->setRepeat(this->repeatMode + 1);

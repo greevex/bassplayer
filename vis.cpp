@@ -81,8 +81,9 @@ void Vis::paintEvent(QPaintEvent *event){
         }
         paint.setPen(*(this->pcol));
         for(int k = 0; k < 128; k++){
-            paint.drawPoint(k * 2, this->pik[k]);
-            paint.drawPoint(k * 2 + 1, this->pik[k]);
+            paint.drawLine(k * 2 + 1, this->pik[k], k * 2 + 2, this->pik[k+1]);
+            //paint.drawPoint(k * 2, this->pik[k]);
+            //paint.drawPoint(k * 2 + 1, this->pik[k]);
         }
         delete fft;
     }

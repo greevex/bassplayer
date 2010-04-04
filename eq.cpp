@@ -34,12 +34,18 @@ Eq::Eq(QWidget *parent) : QDialog(parent), ui(new Ui::Eq)
     connect(ui->verticalSlider_26, SIGNAL(valueChanged(int)), this, SLOT(setEQ()));
     connect(ui->verticalSlider_27, SIGNAL(valueChanged(int)), this, SLOT(setEQ()));
     connect(ui->verticalSlider_28, SIGNAL(valueChanged(int)), this, SLOT(setEQ()));
-
+    this->resetAction = new QAction("Reset", this);
+    connect(this->resetAction, SIGNAL(triggered()), this, SLOT(reset()));
 }
 
 Eq::~Eq()
 {
     delete ui;
+}
+void Eq::contextMenuEvent(QContextMenuEvent *event){
+    QMenu menu(this);
+    menu.addAction(this->resetAction);
+    menu.exec(event->globalPos());
 }
 
 void Eq::changeEvent(QEvent *e)
@@ -388,4 +394,34 @@ void Eq::setEq()
 }
 float Eq::getGain(int val){
     return (float)((val - 150) / 10);
+}
+void Eq::reset(){
+    this->setEq(80, 150);
+    this->setEq(120, 150);
+    this->setEq(150, 150);
+    this->setEq(200, 150);
+    this->setEq(250, 150);
+    this->setEq(300, 150);
+    this->setEq(400, 150);
+    this->setEq(500, 150);
+    this->setEq(600, 150);
+    this->setEq(700, 150);
+    this->setEq(800, 150);
+    this->setEq(900, 150);
+    this->setEq(1000, 150);
+    this->setEq(2000, 150);
+    this->setEq(3000, 150);
+    this->setEq(4000, 150);
+    this->setEq(5000, 150);
+    this->setEq(6000, 150);
+    this->setEq(7000, 150);
+    this->setEq(8000, 150);
+    this->setEq(9000, 150);
+    this->setEq(10000, 150);
+    this->setEq(11000, 150);
+    this->setEq(12000, 150);
+    this->setEq(13000, 150);
+    this->setEq(14000, 150);
+    this->setEq(15000, 150);
+    this->setEq(16000, 150);
 }

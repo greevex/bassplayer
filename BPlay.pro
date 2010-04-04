@@ -17,4 +17,3 @@ FORMS += mainwindow.ui \
     eq.ui \
     pl.ui \
     vis.ui
-OTHER_FILES += 
