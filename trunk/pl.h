@@ -29,6 +29,7 @@ public:
     QString path;
     void setCurrent(int pos);
     int getCurrent();
+    int getMax();
 
 protected:
     void changeEvent(QEvent *e);
