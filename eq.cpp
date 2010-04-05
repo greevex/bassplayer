@@ -1,5 +1,7 @@
 #include "eq.h"
 #include "ui_eq.h"
+#include <iostream>
+#include <QDebug>
 
 Eq::Eq(QWidget *parent) : QDialog(parent), ui(new Ui::Eq)
 {
@@ -190,6 +192,34 @@ void Eq::setEq(int Hz, int value)
 
 void Eq::setEQ()
 {
+    this->setTt(ui->verticalSlider, 80);
+    this->setTt(ui->verticalSlider_2, 120);
+    this->setTt(ui->verticalSlider_3, 150);
+    this->setTt(ui->verticalSlider_4, 200);
+    this->setTt(ui->verticalSlider_5, 250);
+    this->setTt(ui->verticalSlider_6, 300);
+    this->setTt(ui->verticalSlider_7, 400);
+    this->setTt(ui->verticalSlider_8, 500);
+    this->setTt(ui->verticalSlider_9, 600);
+    this->setTt(ui->verticalSlider_10, 700);
+    this->setTt(ui->verticalSlider_11, 800);
+    this->setTt(ui->verticalSlider_12, 900);
+    this->setTt(ui->verticalSlider_13, 1000);
+    this->setTt(ui->verticalSlider_14, 2000);
+    this->setTt(ui->verticalSlider_15, 3000);
+    this->setTt(ui->verticalSlider_16, 4000);
+    this->setTt(ui->verticalSlider_17, 5000);
+    this->setTt(ui->verticalSlider_18, 6000);
+    this->setTt(ui->verticalSlider_19, 7000);
+    this->setTt(ui->verticalSlider_20, 8000);
+    this->setTt(ui->verticalSlider_21, 9000);
+    this->setTt(ui->verticalSlider_22, 10000);
+    this->setTt(ui->verticalSlider_23, 11000);
+    this->setTt(ui->verticalSlider_24, 12000);
+    this->setTt(ui->verticalSlider_25, 13000);
+    this->setTt(ui->verticalSlider_26, 14000);
+    this->setTt(ui->verticalSlider_27, 15000);
+    this->setTt(ui->verticalSlider_28, 16000);
     BASS_DX8_PARAMEQ *p80 = new BASS_DX8_PARAMEQ();
     BASS_DX8_PARAMEQ *p120 = new BASS_DX8_PARAMEQ();
     BASS_DX8_PARAMEQ *p150 = new BASS_DX8_PARAMEQ();
@@ -393,7 +423,7 @@ void Eq::setEq()
     this->setEQ();
 }
 float Eq::getGain(int val){
-    return (float)((val - 150) / 10);
+    return (float)((val - 150)) / (float)10;
 }
 void Eq::reset(){
     this->setEq(80, 150);
@@ -424,4 +454,15 @@ void Eq::reset(){
     this->setEq(14000, 150);
     this->setEq(15000, 150);
     this->setEq(16000, 150);
+}
+void Eq::setTt(QSlider *slider, int hz){
+    slider->setToolTip(
+            QString().
+            setNum(hz).
+            append(" Hz\n").
+            append((this->getGain(slider->value()) > 0) ? "+" : "").
+            append(QString().number(this->getGain(slider->value()), 'F', 1)).
+            append("dB")
+            );
+    //qDebug() << slider->value() << ((double)(slider->value() - 150) / (double)10);
 }
