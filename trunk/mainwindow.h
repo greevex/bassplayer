@@ -15,7 +15,7 @@
 namespace Ui {
     class MainWindow;
 }
-
+void CALLBACK DSP(HDSP handle, DWORD channel, void *buffer, DWORD length, void *user);
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:

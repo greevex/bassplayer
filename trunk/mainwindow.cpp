@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWindow)
 {
     this->setWindowFlags(Qt::Window | Qt::MSWindowsFixedSizeDialogHint);
@@ -28,7 +29,7 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->vis = new Vis(this);
     this->setHand();
     this->loadConf();
-    this->timer->setInterval(100);
+    this->timer->setInterval(200);
     this->conftimer->setInterval(1000);
     this->titletimer->setInterval(500);
     this->conftimer->start();
@@ -205,6 +206,17 @@ void MainWindow::updateHFX()
     delete eq1;
     delete eq2;
     delete eq3;
+    //установка fx
+    /*
+    BASS_DX8_ECHO *ex = new BASS_DX8_ECHO();
+    ex->lPanDelay = false;
+    ex->fFeedback = 5;
+    ex->fLeftDelay = 400;
+    ex->fRightDelay = 410;
+    ex->fWetDryMix = 90;
+    BASS_FXSetParameters(BASS_ChannelSetFX(this->channel, BASS_FX_DX8_ECHO, 1), ex);
+    */
+    //
     this->eq->e80 = BASS_ChannelSetFX(this->channel, BASS_FX_DX8_PARAMEQ, 1);
     this->eq->e120 = BASS_ChannelSetFX(this->channel, BASS_FX_DX8_PARAMEQ, 1);
     this->eq->e150 = BASS_ChannelSetFX(this->channel, BASS_FX_DX8_PARAMEQ, 1);
@@ -550,6 +562,9 @@ void MainWindow::turnShuffle(bool shuffl){
         this->shuffle = true;
         this->ui->label_4->setStyleSheet("color: #000;");
         this->shuffled = new QList<int>();
+        if(this->played){
+            this->shuffled->append(this->current);
+        }
     }
 }
 void MainWindow::turnShuffle(){

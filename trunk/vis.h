@@ -28,6 +28,7 @@ private:
     HSTREAM chan;
     float fft[2048];
     int pik[128];
+    int fps;
     QColor *bcol;
     QColor *pcol;
     QColor *mcol;
