@@ -2,14 +2,16 @@
 #include "ui_vis.h"
 #include <QPainter>
 
+#define FPS 50
 Vis::Vis(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Vis)
 {
+    this->fps = FPS;
     this->setWindowTitle("Spectr");
     this->setWindowFlags(Qt::Tool | Qt::MSWindowsFixedSizeDialogHint);
     this->timer = new QTimer(this);
-    this->timer->setInterval(30);
+    this->timer->setInterval((int)(1000 / fps));
     connect(this->timer, SIGNAL(timeout()), this, SLOT(repaint()));
     this->timer->start();
     for(int i = 0; i < 128; i++){
@@ -47,6 +49,10 @@ void Vis::changeEvent(QEvent *e)
 }
 void Vis::paintEvent(QPaintEvent *event){
     if(this->isVisible()){
+        if(this->fps != FPS){
+            this->fps = FPS;
+            this->timer->setInterval((int)(1000 /this->fps));
+        }
         QPainter paint(this);
         paint.fillRect(0, 0, this->width(), this->height(), *(this->bcol));
         paint.setPen(*(this->mcol));
@@ -64,8 +70,8 @@ void Vis::paintEvent(QPaintEvent *event){
                 h = (int)((this->height() / 2) + (h / 10)); //"урезание"
             }
 
-            if(h < this->pik[j]){
-                this->pik[j] = h - 1;
+            if(h <= this->pik[j]){
+                this->pik[j] = h - 2;
             }
 
             j1 = j * 2;
@@ -86,5 +92,9 @@ void Vis::paintEvent(QPaintEvent *event){
             //paint.drawPoint(k * 2 + 1, this->pik[k]);
         }
         delete fft;
+    }
+    else{
+        this->fps = 1;
+        this->timer->setInterval((int)(1000 / this->fps));
     }
 }
