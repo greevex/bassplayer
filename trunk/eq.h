@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QContextMenuEvent>
 #include <QMenu>
+#include <QSlider>
 #include "bass.h"
 
 namespace Ui {
@@ -26,6 +27,7 @@ protected:
 
 private:
     Ui::Eq *ui;
+    void setTt(QSlider *slider, int hz);
     QAction *resetAction;
 public:
     HFX e80;

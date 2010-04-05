@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'eq.ui'
 **
-** Created: Thu 1. Apr 23:07:44 2010
+** Created: Tue 6. Apr 03:18:40 2010
 **      by: Qt User Interface Compiler version 4.6.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -273,10 +273,10 @@ public:
         label_2->setGeometry(QRect(10, 56, 21, 16));
         label_3 = new QLabel(Eq);
         label_3->setObjectName(QString::fromUtf8("label_3"));
-        label_3->setGeometry(QRect(10, 8, 31, 16));
+        label_3->setGeometry(QRect(8, 8, 31, 16));
         label_4 = new QLabel(Eq);
         label_4->setObjectName(QString::fromUtf8("label_4"));
-        label_4->setGeometry(QRect(10, 108, 31, 16));
+        label_4->setGeometry(QRect(8, 108, 31, 16));
 
         retranslateUi(Eq);
 
