@@ -1,6 +1,5 @@
 #include "eq.h"
 #include "ui_eq.h"
-#include <iostream>
 #include <QDebug>
 
 Eq::Eq(QWidget *parent) : QDialog(parent), ui(new Ui::Eq)
@@ -464,5 +463,4 @@ void Eq::setTt(QSlider *slider, int hz){
             append(QString().number(this->getGain(slider->value()), 'F', 1)).
             append("dB")
             );
-    //qDebug() << slider->value() << ((double)(slider->value() - 150) / (double)10);
 }

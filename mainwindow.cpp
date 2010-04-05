@@ -177,9 +177,23 @@ int MainWindow::getPosition(){
 }
 void MainWindow::setVolume()
 {
-    float f = (float)ui->horizontalSlider_2->value()/100;
-    BASS_ChannelSetAttribute(this->channel, BASS_ATTRIB_VOL, f);
+    if(this->channel){
+        float f = (float)ui->horizontalSlider_2->value()/100;
+        BASS_ChannelSetAttribute(this->channel, BASS_ATTRIB_VOL, f);
+    }
 }
+void MainWindow::setVolume(int val, bool fade){
+    if(this->channel){
+        float vol = (float)val / 100.0;
+        if(fade){
+            BASS_ChannelSlideAttribute(this->channel, BASS_ATTRIB_VOL, vol, 1500);
+        }
+        else{
+            BASS_ChannelSetAttribute(this->channel, BASS_ATTRIB_VOL, vol);
+        }
+    }
+}
+
 void MainWindow::setPan()
 {
     float pan = (float)(this->ui->horizontalSlider_3->value() - 10) / 10;
@@ -370,6 +384,8 @@ void MainWindow::loadConf()
 }
 void MainWindow::resumePlay(){
     this->playlist->setCurrent(this->current);
+    this->setVolume(0, false);
+    this->setVolume(this->ui->horizontalSlider_2->value(), true);
     this->setPosition(this->_lstpos);
 }
 DWORD MainWindow::getType(){
@@ -393,7 +409,6 @@ QString MainWindow::getTitle(){
     }
     return str;
 }
-
 void MainWindow::next(){
     int trk = this->current + 1;
     if(this->shuffle){
