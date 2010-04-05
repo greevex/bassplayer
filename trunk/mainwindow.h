@@ -83,6 +83,7 @@ private slots:
     void Update();
     void setTitle();
     void setVolume();
+    void setVolume(int val, bool fade = false);
     void setPosition();
     void setPosition(int pos);
     void setPan();
