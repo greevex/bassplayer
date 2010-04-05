@@ -44,6 +44,8 @@ private:
     void loadConf();
     void playNext();
     int getPosition();
+    DWORD getType();
+    QString getTitle();
     void showEq(bool vis);
     void showPl(bool vis);
     void showVis(bool vis);

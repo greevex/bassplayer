@@ -372,6 +372,28 @@ void MainWindow::resumePlay(){
     this->playlist->setCurrent(this->current);
     this->setPosition(this->_lstpos);
 }
+DWORD MainWindow::getType(){
+    BASS_CHANNELINFO *inf = new BASS_CHANNELINFO();
+    int type = -1;
+    if(this->channel){
+        if(BASS_ChannelGetInfo(this->channel, inf)){
+            type = inf->ctype;
+        }
+    }
+    delete inf;
+    return type;
+}
+QString MainWindow::getTitle(){
+    QString str;
+    if((int)this->getType() != -1){
+        TAG_ID3 *tags = (TAG_ID3*)BASS_ChannelGetTags(this->channel, BASS_TAG_ID3);
+        if(tags != NULL){
+            str.append(tags->artist).append(" - ").append(tags->title);
+        }
+    }
+    return str;
+}
+
 void MainWindow::next(){
     int trk = this->current + 1;
     if(this->shuffle){
@@ -447,6 +469,10 @@ void MainWindow::changeTrack(QString str)
     this->eq->setEq();
     this->stopping = false;
     this->current = this->playlist->getCurrent();
+    QString title = this->getTitle();
+    if(!title.isEmpty() && !title.isNull() && title != " - "){
+        this->playlist->setTitle(this->current, title);
+    }
     this->playPause();
 }
 void MainWindow::setTitle(){
