@@ -7,6 +7,9 @@
 #include <QDir>
 #include <QSettings>
 #include <QTimer>
+#include <QTranslator>
+#include <QApplication>
+
 
 Pl::Pl(QWidget *parent) : QDialog(parent),
     ui(new Ui::Pl)
@@ -20,6 +23,9 @@ Pl::Pl(QWidget *parent) : QDialog(parent),
     this->tmr->setInterval(10000); //10 sec
     this->tmr->start();
     this->ui->listWidget->setAcceptDrops(true);
+    this->ui->listWidget->setMaximumWidth(this->width());
+    this->ui->listWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    this->ui->listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     connect(this->ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(trackClick(QListWidgetItem*)));
     connect(this->tmr, SIGNAL(timeout()), this, SLOT(save()));
     this->_curr = 0;
@@ -184,4 +190,9 @@ bool Pl::load(QString path){
     }
     file.close();
     return true;
+}
+void Pl::setTitle(int idx, QString title){
+    if(idx >= 0 && idx < this->tracks->length()){
+        this->ui->listWidget->item(idx)->setText(title);
+    }
 }

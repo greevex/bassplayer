@@ -30,6 +30,7 @@ public:
     void setCurrent(int pos);
     int getCurrent();
     int getMax();
+    void setTitle(int idx, QString title);
 
 protected:
     void changeEvent(QEvent *e);
@@ -43,6 +44,7 @@ private:
     void select(int idx);
     int _curr;
     QTimer *tmr;
+    const char* html;
 private slots:
     void trackClick(QListWidgetItem *qlwi);
     bool save();
