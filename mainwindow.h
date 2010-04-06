@@ -25,11 +25,11 @@ public:
 protected:
     void changeEvent(QEvent *e);
     void contextMenuEvent(QContextMenuEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::MainWindow *ui;
     QTimer *timer;
-    QTimer *conftimer;
     QTimer *titletimer;
     Eq *eq;
     Pl *playlist;

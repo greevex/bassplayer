@@ -18,9 +18,6 @@ Pl::Pl(QWidget *parent) : QDialog(parent),
     this->setWindowFlags(Qt::Tool | Qt::MSWindowsFixedSizeDialogHint);
     ui->setupUi(this);
     this->tracks = new QList<QString>();
-    this->tmr = new QTimer();
-    this->tmr->setInterval(10000); //10 sec
-    this->tmr->start();
     this->ui->listWidget->setAcceptDrops(true);
     this->ui->listWidget->setMaximumWidth(this->width());
     this->ui->listWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
@@ -29,7 +26,6 @@ Pl::Pl(QWidget *parent) : QDialog(parent),
     this->createActions();
     connect(this->ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(trackClick(QListWidgetItem*)));
     connect(this->ui->listWidget, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(mouseOver(QListWidgetItem*)));
-    connect(this->tmr, SIGNAL(timeout()), this, SLOT(save()));
     this->_curr = 0;
     this->path = "./playlist.m3u";
 }
@@ -243,4 +239,6 @@ void Pl::deleteItem(){
         }
     }
 }
-
+void Pl::hideEvent(QHideEvent *event){
+    qDebug() << "hide playlist...";
+}

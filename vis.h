@@ -33,6 +33,8 @@ protected:
     void changeEvent(QEvent *e);
     void paintEvent(QPaintEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
+    void hideEvent(QHideEvent *event);
+    void showEvent(QShowEvent *event);
 
 private:
     Ui::Vis *ui;
