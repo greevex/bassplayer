@@ -50,6 +50,7 @@ private:
     QList<QAction*> *actions;
 private slots:
     void changeVis();
+    void about();
 };
 
 #endif // VIS_H

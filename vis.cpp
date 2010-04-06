@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QDir>
 #include <QDebug>
+#include <QMessageBox>
 
 #define FPS 50
 Vis::Vis(QWidget *parent) :
@@ -101,6 +102,9 @@ void Vis::createActions(){
         connect(action, SIGNAL(triggered()), this, SLOT(changeVis()));
         this->actions->append(action);
     }
+    QAction *about = new QAction("About", this);
+    connect(about, SIGNAL(triggered()), this, SLOT(about()));
+    this->actions->append(about);
 }
 void Vis::contextMenuEvent(QContextMenuEvent *event){
     QMenu menu(this);
@@ -124,4 +128,15 @@ void Vis::hideEvent(QHideEvent *event){
 }
 void Vis::showEvent(QShowEvent *event){
     this->timer->start();
+}
+void Vis::about(){
+    if(this->vislib->isLoaded()){
+        typedef void (*VisInf)(VisInfo*);
+        VisInf inf = (VisInf)this->vislib->resolve("Info");
+        if(inf){
+            VisInfo *vinf = new VisInfo();
+            inf(vinf);
+            QMessageBox::about(this, "About " + vinf->name, "<h2>" + vinf->name + "</h2><br />" + "<b>Autor:</b> " + vinf->autor + "<br /><b>version:</b> " + vinf->version);
+        }
+    }
 }
