@@ -22,7 +22,6 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->shuffle = false;
     this->mute = false;
     this->shuffled = NULL;
-    this->conftimer = new QTimer(this);
     this->timer = new QTimer(this);
     this->titletimer = new QTimer(this);
     this->eq = new Eq(this);
@@ -31,9 +30,7 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->setHand();
     this->loadConf();
     this->timer->setInterval(200);
-    this->conftimer->setInterval(1000);
     this->titletimer->setInterval(500);
-    this->conftimer->start();
     this->titletimer->start();
     this->stopping = true;
     this->setStyle(this->style);
@@ -61,6 +58,10 @@ void MainWindow::createActions(){
     this->repeatAction->setShortcut(tr("Ctrl+Alt+R"));
     connect(this->repeatAction, SIGNAL(triggered()), this, SLOT(setRepeat()));
 }
+void MainWindow::closeEvent(QCloseEvent *event){
+    this->saveConf();
+}
+
 void MainWindow::setHand()
 {
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(openFile()));
@@ -70,7 +71,6 @@ void MainWindow::setHand()
     connect(ui->horizontalSlider_2, SIGNAL(valueChanged(int)), this, SLOT(setVolume()));
     connect(ui->horizontalSlider_3, SIGNAL(valueChanged(int)), this, SLOT(setPan()));
     connect(this->timer, SIGNAL(timeout()), this, SLOT(Update()));
-    connect(this->conftimer, SIGNAL(timeout()), this, SLOT(saveConf()));
     connect(this->titletimer, SIGNAL(timeout()), this, SLOT(setTitle()));
     connect(this->ui->pushButton_4, SIGNAL(clicked()), this, SLOT(toggleEQ()));
     connect(this->ui->pushButton_5, SIGNAL(clicked()), this, SLOT(togglePL()));
@@ -313,6 +313,8 @@ void MainWindow::saveConf()
     setting.setValue("LastPosition", this->getPosition());
     setting.setValue("Shuffle", this->shuffle);
     setting.setValue("Repeat", this->repeatMode);
+
+    this->playlist->save();
 }
 void MainWindow::loadConf()
 {

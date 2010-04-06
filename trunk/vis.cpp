@@ -15,7 +15,6 @@ Vis::Vis(QWidget *parent) :
     this->timer = new QTimer(this);
     this->timer->setInterval((int)(1000 / fps));
     connect(this->timer, SIGNAL(timeout()), this, SLOT(repaint()));
-    this->timer->start();
     this->libs = new QStringList();
     this->libsinfo = new QList<VisInfo*>();
     this->actions = new QList<QAction*>();
@@ -23,6 +22,8 @@ Vis::Vis(QWidget *parent) :
     this->createActions();
     this->vislib = new QLibrary("./plugins/vis_spect");
     ui->setupUi(this);
+    if(this->isVisible())
+        this->timer->start();
 }
 
 Vis::~Vis()
@@ -117,4 +118,10 @@ void Vis::changeVis(){
     delete this->vislib;
     this->vislib = new QLibrary(this->libs->value(libid));
     qDebug() << "vis lib chaged to" << this->libsinfo->value(libid)->name;
+}
+void Vis::hideEvent(QHideEvent *event){
+    this->timer->stop();
+}
+void Vis::showEvent(QShowEvent *event){
+    this->timer->start();
 }

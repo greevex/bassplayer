@@ -29,6 +29,7 @@ public:
     void addPath(QString path);
     void next(QString file);
     bool load(QString path);
+    bool save();
     QString current();
     QString path;
     void setCurrent(int pos);
@@ -41,6 +42,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
+    void hideEvent(QHideEvent *event);
 
 private:
     Ui::Pl *ui;
@@ -53,7 +55,6 @@ private:
     int _curr;
 private slots:
     void trackClick(QListWidgetItem *qlwi);
-    bool save();
     void deleteItem();
 signals:
     void changeTrack(QString);
