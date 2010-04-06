@@ -9,7 +9,7 @@
 #include <QTimer>
 #include <QTranslator>
 #include <QApplication>
-
+#include <QDebug>
 
 Pl::Pl(QWidget *parent) : QDialog(parent),
     ui(new Ui::Pl)
@@ -27,6 +27,7 @@ Pl::Pl(QWidget *parent) : QDialog(parent),
     this->ui->listWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     this->ui->listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     connect(this->ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(trackClick(QListWidgetItem*)));
+    connect(this->ui->listWidget, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(mouseOver(QListWidgetItem*)));
     connect(this->tmr, SIGNAL(timeout()), this, SLOT(save()));
     this->_curr = 0;
     this->path = "./playlist.m3u";
@@ -195,4 +196,7 @@ void Pl::setTitle(int idx, QString title){
     if(idx >= 0 && idx < this->tracks->length()){
         this->ui->listWidget->item(idx)->setText(title);
     }
+}
+void Pl::mouseOver(QListWidgetItem *item){
+    qDebug() << "mouse over: " + item->text();
 }

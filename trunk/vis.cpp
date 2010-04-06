@@ -1,6 +1,8 @@
 #include "vis.h"
 #include "ui_vis.h"
 #include <QPainter>
+#include <QDir>
+#include <QDebug>
 
 #define FPS 50
 Vis::Vis(QWidget *parent) :
@@ -14,12 +16,12 @@ Vis::Vis(QWidget *parent) :
     this->timer->setInterval((int)(1000 / fps));
     connect(this->timer, SIGNAL(timeout()), this, SLOT(repaint()));
     this->timer->start();
-    for(int i = 0; i < 128; i++){
-        this->pik[i] = 0;
-    }
-    this->bcol = new QColor(0x00, 0x00, 0x00);
-    this->pcol = new QColor(0xff, 0x00, 0x00);
-    this->mcol = new QColor(0x00, 0xff, 0x00);
+    this->libs = new QStringList();
+    this->libsinfo = new QList<VisInfo*>();
+    this->actions = new QList<QAction*>();
+    this->checkLibs();
+    this->createActions();
+    this->vislib = new QLibrary("vis_spect");
     ui->setupUi(this);
 }
 
@@ -30,12 +32,6 @@ Vis::~Vis()
 void Vis::setChannel(HSTREAM chan){
     this->chan = chan;
 }
-void Vis::setColor(QColor back, QColor pik, QColor main){
-    *(this->bcol) = back;
-    *(this->mcol) = main;
-    *(this->pcol) = pik;
-}
-
 void Vis::changeEvent(QEvent *e)
 {
     QDialog::changeEvent(e);
@@ -53,48 +49,73 @@ void Vis::paintEvent(QPaintEvent *event){
             this->fps = FPS;
             this->timer->setInterval((int)(1000 /this->fps));
         }
+        typedef void (*Drawer)(QPainter&, float*);
+        Drawer Draw = (Drawer)vislib->resolve("Draw");
         QPainter paint(this);
-        paint.fillRect(0, 0, this->width(), this->height(), *(this->bcol));
-        paint.setPen(*(this->mcol));
         BASS_ChannelGetData(this->chan, fft, BASS_DATA_FFT4096); //получение даных БФП
-        float c = 0;
-        int h = 0;
-        int j1 = 0;
-        for(int i = 0, j = 0; i < 1024; i+=8, j++){
-            for(int l = 0; l < 8; l+=2){
-                c += fft[i+l];
-            }
-            c = c / 4; //вычисление среднего из 4х "соседних частот"
-            h = (int)(this->height() - (c * 10 * this->height() * 3));
-            if(h < (this->height() / 2)){
-                h = (int)((this->height() / 2) + (h / 10)); //"урезание"
-            }
+        Draw(paint, fft);
 
-            if(h <= this->pik[j]){
-                this->pik[j] = h - 2;
-            }
-
-            j1 = j * 2;
-            paint.drawLine(j1, this->height(), j1, h);
-            j1++;
-            paint.drawLine(j1, this->height(), j1, h);
-
-            c = 0;
-        }
-
-        for(int k = 0; k < 128; k++){
-            this->pik[k]+=2;
-        }
-        paint.setPen(*(this->pcol));
-        for(int k = 0; k < 128; k++){
-            paint.drawLine(k * 2 + 1, this->pik[k], k * 2 + 2, this->pik[k+1]);
-            //paint.drawPoint(k * 2, this->pik[k]);
-            //paint.drawPoint(k * 2 + 1, this->pik[k]);
-        }
-        delete fft;
     }
     else{
         this->fps = 1;
         this->timer->setInterval((int)(1000 / this->fps));
     }
+}
+void Vis::checkLibs(){
+    QDir dir("./plugins");
+    if(dir.exists()){
+        QStringList filters;
+        filters.append("vis_*.dll");
+        filters.append("vis_*.so");
+        QStringList list = dir.entryList(filters, QDir::Files);
+        for(int i = 0; i < list.length(); i++){
+            qDebug() << "checking: " << list.value(i);
+            if(QLibrary::isLibrary("./plugins/" + list.value(i))){
+                qDebug() << "create typedef...";
+                typedef void (*VisInf)(VisInfo*);
+                VisInf inf = (VisInf)QLibrary::resolve("./plugins/" + list.value(i), "Info");
+                qDebug() << "typedef create success...";
+                if(!inf){
+                    qDebug() << "could't resolve method Info";
+                    continue;
+                }
+                else{
+                    qDebug() << "create struct obj...";
+                    VisInfo * vinf = new VisInfo();
+                    qDebug() << "launch Info()...";
+                    inf(vinf);
+                    qDebug() << "appending";
+                    this->libs->append(list.value(i));
+                    this->libsinfo->append(vinf);
+                    qDebug() << "added: " << list.value(i) << ", autor: " << vinf->autor << ", name: " << vinf->name << ", version: " << vinf->version;
+                }
+            }
+            qDebug() << "end checking:" << list.value(i);
+        }
+    }
+}
+void Vis::createActions(){
+    for(int i = 0; i < this->libs->length(); i++){
+        QAction *action = new QAction(this->libsinfo->value(i)->name, this);
+        action->setData(i);
+        connect(action, SIGNAL(triggered()), this, SLOT(changeVis()));
+        this->actions->append(action);
+    }
+}
+void Vis::contextMenuEvent(QContextMenuEvent *event){
+    QMenu menu(this);
+    for(int i = 0; i < this->actions->length(); i++){
+        menu.addAction(this->actions->value(i));
+    }
+    menu.exec(event->globalPos());
+}
+void Vis::changeVis(){
+    QAction *act = qobject_cast<QAction*>(sender());
+    int libid = act->data().toInt();
+    this->vislib->unload();
+    this->vislib->~QLibrary();
+
+    this->vislib = new QLibrary(this->libs->value(libid));
+
+    qDebug() << "vis lib chaged to" << this->libsinfo->value(libid)->name;
 }
