@@ -48,8 +48,9 @@ private:
 private slots:
     void trackClick(QListWidgetItem *qlwi);
     bool save();
+    void mouseOver(QListWidgetItem *item);
 signals:
-            void changeTrack(QString);
+    void changeTrack(QString);
 };
 
 #endif // PL_H
