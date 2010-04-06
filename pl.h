@@ -21,7 +21,7 @@ class Pl : public QDialog {
 public:
     Pl(QWidget *parent = 0);
     ~Pl();
-    void addTrack(QString path);
+    bool addTrack(QString path);
     void addPath(QString path);
     void next(QString file);
     bool load(QString path);
@@ -48,7 +48,6 @@ private:
 private slots:
     void trackClick(QListWidgetItem *qlwi);
     bool save();
-    void mouseOver(QListWidgetItem *item);
 signals:
     void changeTrack(QString);
 };

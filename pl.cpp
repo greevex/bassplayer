@@ -78,10 +78,10 @@ void Pl::dropEvent(QDropEvent *event){
     }
 }
 
-void Pl::addTrack(QString path)
+bool Pl::addTrack(QString path)
 {
-    if(path.isEmpty()){
-        return;
+    if(path.isEmpty() || !QFile(path).exists()){
+        return false;
     }
     this->tracks->append(path);
     QFileInfo *f = new QFileInfo(path);
@@ -89,6 +89,7 @@ void Pl::addTrack(QString path)
     QListWidgetItem *trk = new QListWidgetItem(this->ui->listWidget);
     trk->setText(this->names->last());
     delete f;
+    return true;
 }
 void Pl::addPath(QString path){
     QDir dir(path);
@@ -182,12 +183,29 @@ bool Pl::load(QString path){
     if(!file.isOpen()){
     }
     QString str;
+    QString title;
     while(file.bytesAvailable() > 0){
         str = QString().fromUtf8(file.readLine(1024)).trimmed();
-        if(str.isEmpty() || str.at(0) == '#'){
+        if(str.isEmpty()){
             continue;
         }
-        this->addTrack(str);
+        else{
+            if(str.at(0) == '#' && title.isEmpty()){
+                if(str.left(10) == "#EXTINF:0,"){
+                    title = str.mid(10);
+                }
+                else{
+                    title = "";
+                }
+            }
+        }
+        if(this->addTrack(str)){
+            if(!title.isEmpty()){
+                this->setTitle(this->tracks->length() - 1, title);
+                qDebug() << "set title" << title;
+                title = "";
+            }
+        }
     }
     file.close();
     return true;
@@ -196,7 +214,4 @@ void Pl::setTitle(int idx, QString title){
     if(idx >= 0 && idx < this->tracks->length()){
         this->ui->listWidget->item(idx)->setText(title);
     }
-}
-void Pl::mouseOver(QListWidgetItem *item){
-    qDebug() << "mouse over: " + item->text();
 }

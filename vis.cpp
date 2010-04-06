@@ -21,7 +21,7 @@ Vis::Vis(QWidget *parent) :
     this->actions = new QList<QAction*>();
     this->checkLibs();
     this->createActions();
-    this->vislib = new QLibrary("vis_spect");
+    this->vislib = new QLibrary("./plugins/vis_spect");
     ui->setupUi(this);
 }
 
@@ -52,8 +52,13 @@ void Vis::paintEvent(QPaintEvent *event){
         typedef void (*Drawer)(QPainter&, float*);
         Drawer Draw = (Drawer)vislib->resolve("Draw");
         QPainter paint(this);
-        BASS_ChannelGetData(this->chan, fft, BASS_DATA_FFT4096); //получение даных БФП
-        Draw(paint, fft);
+        if(Draw){
+            BASS_ChannelGetData(this->chan, fft, BASS_DATA_FFT4096); //получение даных БФП
+            Draw(paint, fft);
+        }
+        else{
+            qDebug() << "error: cold not resolve Draw...";
+        }
 
     }
     else{
@@ -71,26 +76,20 @@ void Vis::checkLibs(){
         for(int i = 0; i < list.length(); i++){
             qDebug() << "checking: " << list.value(i);
             if(QLibrary::isLibrary("./plugins/" + list.value(i))){
-                qDebug() << "create typedef...";
                 typedef void (*VisInf)(VisInfo*);
                 VisInf inf = (VisInf)QLibrary::resolve("./plugins/" + list.value(i), "Info");
-                qDebug() << "typedef create success...";
                 if(!inf){
-                    qDebug() << "could't resolve method Info";
+                    qDebug() << "error: could't resolve method Info";
                     continue;
                 }
                 else{
-                    qDebug() << "create struct obj...";
                     VisInfo * vinf = new VisInfo();
-                    qDebug() << "launch Info()...";
                     inf(vinf);
-                    qDebug() << "appending";
                     this->libs->append(list.value(i));
                     this->libsinfo->append(vinf);
                     qDebug() << "added: " << list.value(i) << ", autor: " << vinf->autor << ", name: " << vinf->name << ", version: " << vinf->version;
                 }
             }
-            qDebug() << "end checking:" << list.value(i);
         }
     }
 }
@@ -112,10 +111,10 @@ void Vis::contextMenuEvent(QContextMenuEvent *event){
 void Vis::changeVis(){
     QAction *act = qobject_cast<QAction*>(sender());
     int libid = act->data().toInt();
-    this->vislib->unload();
-    this->vislib->~QLibrary();
-
+    if(!this->vislib->unload()){
+        qDebug() << "error unloading library...";
+    }
+    delete this->vislib;
     this->vislib = new QLibrary(this->libs->value(libid));
-
     qDebug() << "vis lib chaged to" << this->libsinfo->value(libid)->name;
 }
