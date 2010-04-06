@@ -8,6 +8,7 @@
 #include <QContextMenuEvent>
 #include <QAction>
 #include <QMenu>
+#include <QMoveEvent>
 #include "ui_pl.h"
 
 QT_BEGIN_NAMESPACE
@@ -54,6 +55,7 @@ private slots:
     void trackClick(QListWidgetItem *qlwi);
     bool save();
     void deleteItem();
+    void moveItem(QModelIndexList list);
 signals:
     void changeTrack(QString);
 };

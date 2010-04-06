@@ -63,7 +63,9 @@ void Pl::dragEnterEvent(QDragEnterEvent *event){
         event->accept();
     }
 }
+
 void Pl::dropEvent(QDropEvent *event){
+    qDebug() << "dropped...";
     QList<QUrl> urls = event->mimeData()->urls();
     QString file;
     for(int i = 0; i < urls.length(); i++){
@@ -240,4 +242,7 @@ void Pl::deleteItem(){
             delete items.value(i);
         }
     }
+}
+void Pl::moveItem(QModelIndexList list){
+    qDebug() << "move item...";
 }
