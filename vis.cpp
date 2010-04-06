@@ -59,12 +59,12 @@ void Vis::paintEvent(QPaintEvent *event){
         else{
             qDebug() << "error: cold not resolve Draw...";
         }
-
     }
     else{
         this->fps = 1;
         this->timer->setInterval((int)(1000 / this->fps));
     }
+    memset(fft, 0, 8192);
 }
 void Vis::checkLibs(){
     QDir dir("./plugins");
