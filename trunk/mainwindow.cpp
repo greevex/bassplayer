@@ -61,7 +61,6 @@ void MainWindow::createActions(){
 void MainWindow::closeEvent(QCloseEvent *event){
     this->saveConf();
 }
-
 void MainWindow::setHand()
 {
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(openFile()));

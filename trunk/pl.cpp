@@ -59,7 +59,6 @@ void Pl::dragEnterEvent(QDragEnterEvent *event){
         event->accept();
     }
 }
-
 void Pl::dropEvent(QDropEvent *event){
     qDebug() << "dropped...";
     QList<QUrl> urls = event->mimeData()->urls();
