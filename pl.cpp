@@ -25,6 +25,7 @@ Pl::Pl(QWidget *parent) : QDialog(parent),
     this->ui->listWidget->setMaximumWidth(this->width());
     this->ui->listWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     this->ui->listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->ui->listWidget->setSelectionMode(QAbstractItemView::ContiguousSelection);
     this->createActions();
     connect(this->ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(trackClick(QListWidgetItem*)));
     connect(this->ui->listWidget, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(mouseOver(QListWidgetItem*)));
@@ -150,8 +151,15 @@ int Pl::getMax(){
     return this->tracks->length() - 1;
 }
 void Pl::select(int idx){
-    this->ui->listWidget->setItemSelected(this->ui->listWidget->item(idx), true);
-    this->ui->listWidget->scrollToItem(this->ui->listWidget->item(idx), QAbstractItemView::PositionAtCenter);
+    QList<QListWidgetItem *> items = this->ui->listWidget->selectedItems();
+    for(int i = 0; i < items.length(); i++){
+        items.value(i)->setSelected(false);
+    }
+    if(!this->ui->listWidget->item(idx)){
+        return;
+    }
+    this->ui->listWidget->item(idx)->setSelected(true);
+    this->ui->listWidget->scrollToItem(this->ui->listWidget->item(idx), QAbstractItemView::EnsureVisible);
 }
 bool Pl::save(){
     if(path.isEmpty()){
