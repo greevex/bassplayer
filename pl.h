@@ -5,6 +5,9 @@
 #include <QList>
 #include <QFileInfo>
 #include <QTimer>
+#include <QContextMenuEvent>
+#include <QAction>
+#include <QMenu>
 #include "ui_pl.h"
 
 QT_BEGIN_NAMESPACE
@@ -36,18 +39,21 @@ protected:
     void changeEvent(QEvent *e);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
+    void contextMenuEvent(QContextMenuEvent *event);
 
 private:
     Ui::Pl *ui;
     QList<QString> *tracks;
-    QList<QString> *names;
     void select(int idx);
-    int _curr;
+    void createActions();
     QTimer *tmr;
+    QAction *del;
     const char* html;
+    int _curr;
 private slots:
     void trackClick(QListWidgetItem *qlwi);
     bool save();
+    void deleteItem();
 signals:
     void changeTrack(QString);
 };

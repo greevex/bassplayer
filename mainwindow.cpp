@@ -155,6 +155,7 @@ void MainWindow::Update()
     this->ui->label->setText(time);
     this->vis->setChannel(this->channel);
     this->setDuration();
+    this->current = this->playlist->getCurrent();
 }
 void MainWindow::setDuration()
 {
@@ -193,7 +194,6 @@ void MainWindow::setVolume(int val, bool fade){
         }
     }
 }
-
 void MainWindow::setPan()
 {
     float pan = (float)(this->ui->horizontalSlider_3->value() - 10) / 10;
@@ -387,7 +387,14 @@ QString MainWindow::getTitle(){
     if((int)this->getType() != -1){
         TAG_ID3 *tags = (TAG_ID3*)BASS_ChannelGetTags(this->channel, BASS_TAG_ID3);
         if(tags != NULL){
-            str.append(tags->artist).append(" - ").append(tags->title);
+            str.
+                    append(
+                            QString().fromLocal8Bit(tags->artist).trimmed().replace("(\\s+)", " ")
+                            ).
+                    append(" - ").
+                    append(
+                            QString().fromLocal8Bit(tags->title).trimmed().replace("(\\s+)", " ")
+                            );
         }
     }
     return str;

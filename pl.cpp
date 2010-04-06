@@ -18,7 +18,6 @@ Pl::Pl(QWidget *parent) : QDialog(parent),
     this->setWindowFlags(Qt::Tool | Qt::MSWindowsFixedSizeDialogHint);
     ui->setupUi(this);
     this->tracks = new QList<QString>();
-    this->names = new QList<QString>();
     this->tmr = new QTimer();
     this->tmr->setInterval(10000); //10 sec
     this->tmr->start();
@@ -26,18 +25,26 @@ Pl::Pl(QWidget *parent) : QDialog(parent),
     this->ui->listWidget->setMaximumWidth(this->width());
     this->ui->listWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     this->ui->listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->createActions();
     connect(this->ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(trackClick(QListWidgetItem*)));
     connect(this->ui->listWidget, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(mouseOver(QListWidgetItem*)));
     connect(this->tmr, SIGNAL(timeout()), this, SLOT(save()));
     this->_curr = 0;
     this->path = "./playlist.m3u";
 }
-
 Pl::~Pl()
 {
     delete ui;
 }
-
+void Pl::createActions(){
+    this->del = new QAction("Delete", this);
+    connect(this->del, SIGNAL(triggered()), this, SLOT(deleteItem()));
+}
+void Pl::contextMenuEvent(QContextMenuEvent *event){
+    QMenu menu(this);
+    menu.addAction(this->del);
+    menu.exec(event->globalPos());
+}
 void Pl::changeEvent(QEvent *e)
 {
     QDialog::changeEvent(e);
@@ -77,7 +84,6 @@ void Pl::dropEvent(QDropEvent *event){
         }
     }
 }
-
 bool Pl::addTrack(QString path)
 {
     if(path.isEmpty() || !QFile(path).exists()){
@@ -85,9 +91,8 @@ bool Pl::addTrack(QString path)
     }
     this->tracks->append(path);
     QFileInfo *f = new QFileInfo(path);
-    this->names->append(f->fileName());
     QListWidgetItem *trk = new QListWidgetItem(this->ui->listWidget);
-    trk->setText(this->names->last());
+    trk->setText(f->fileName());
     delete f;
     return true;
 }
@@ -104,7 +109,6 @@ void Pl::addPath(QString path){
         }
     }
 }
-
 void Pl::trackClick(QListWidgetItem *qlwi)
 {
    int row =  this->ui->listWidget->row(qlwi);
@@ -145,12 +149,10 @@ int Pl::getCurrent(){
 int Pl::getMax(){
     return this->tracks->length() - 1;
 }
-
 void Pl::select(int idx){
     this->ui->listWidget->setItemSelected(this->ui->listWidget->item(idx), true);
     this->ui->listWidget->scrollToItem(this->ui->listWidget->item(idx), QAbstractItemView::PositionAtCenter);
 }
-
 bool Pl::save(){
     if(path.isEmpty()){
         return false;
@@ -202,7 +204,6 @@ bool Pl::load(QString path){
         if(this->addTrack(str)){
             if(!title.isEmpty()){
                 this->setTitle(this->tracks->length() - 1, title);
-                qDebug() << "set title" << title;
                 title = "";
             }
         }
@@ -213,5 +214,22 @@ bool Pl::load(QString path){
 void Pl::setTitle(int idx, QString title){
     if(idx >= 0 && idx < this->tracks->length()){
         this->ui->listWidget->item(idx)->setText(title);
+    }
+}
+void Pl::deleteItem(){
+    QList<QListWidgetItem *> items = this->ui->listWidget->selectedItems();
+    if(items.length() > 0){
+        for(int i = 0; i < items.length(); i++){
+            int pos = this->ui->listWidget->row(items.value(i));
+            this->ui->listWidget->removeItemWidget(items.value(i));
+            this->tracks->removeAt(pos);
+            if(pos < this->_curr){
+                this->_curr--;
+            }
+            else if(pos == this->_curr){
+                this->setCurrent(this->_curr+1);
+            }
+            delete items.value(i);
+        }
     }
 }
