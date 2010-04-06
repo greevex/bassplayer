@@ -389,14 +389,15 @@ QString MainWindow::getTitle(){
         if(tags != NULL){
             str.
                     append(
-                            QString().fromLocal8Bit(tags->artist).trimmed().replace("(\\s+)", " ")
+                            QString().fromLocal8Bit(tags->artist).trimmed().replace(QRegExp("\\s+"), " ")
                             ).
                     append(" - ").
                     append(
-                            QString().fromLocal8Bit(tags->title).trimmed().replace("(\\s+)", " ")
+                            QString().fromLocal8Bit(tags->title).trimmed().replace(QRegExp("\\s+"), " ")
                             );
         }
     }
+    qDebug() << "returned:" << str;
     return str;
 }
 void MainWindow::next(){
@@ -447,6 +448,9 @@ void MainWindow::prew(){
 }
 void MainWindow::changeTrack(QString str)
 {
+    if(this->playlist->getMax() == 0){
+        this->stop();
+    }
     if(this->isMod){
         BASS_MusicFree(this->channel);
         this->isMod = false;
