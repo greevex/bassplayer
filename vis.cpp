@@ -55,6 +55,7 @@ void Vis::paintEvent(QPaintEvent *event){
         if(Draw){
             BASS_ChannelGetData(this->chan, fft, BASS_DATA_FFT4096); //получение даных БФП
             Draw(paint, fft);
+            memset(fft, 0, 8192);
         }
         else{
             qDebug() << "error: cold not resolve Draw...";
@@ -64,7 +65,6 @@ void Vis::paintEvent(QPaintEvent *event){
         this->fps = 1;
         this->timer->setInterval((int)(1000 / this->fps));
     }
-    memset(fft, 0, 8192);
 }
 void Vis::checkLibs(){
     QDir dir("./plugins");

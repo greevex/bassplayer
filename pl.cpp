@@ -243,6 +243,4 @@ void Pl::deleteItem(){
         }
     }
 }
-void Pl::moveItem(QModelIndexList list){
-    qDebug() << "move item...";
-}
+

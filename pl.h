@@ -55,7 +55,6 @@ private slots:
     void trackClick(QListWidgetItem *qlwi);
     bool save();
     void deleteItem();
-    void moveItem(QModelIndexList list);
 signals:
     void changeTrack(QString);
 };
