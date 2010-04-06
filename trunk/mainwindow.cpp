@@ -20,6 +20,7 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->played = false;
     this->isMod = false;
     this->shuffle = false;
+    this->mute = false;
     this->shuffled = NULL;
     this->conftimer = new QTimer(this);
     this->timer = new QTimer(this);
@@ -187,7 +188,7 @@ void MainWindow::setVolume(int val, bool fade){
     if(this->channel){
         float vol = (float)val / 100.0;
         if(fade){
-            BASS_ChannelSlideAttribute(this->channel, BASS_ATTRIB_VOL, vol, 1500);
+            BASS_ChannelSlideAttribute(this->channel, BASS_ATTRIB_VOL, vol, 3000);
         }
         else{
             BASS_ChannelSetAttribute(this->channel, BASS_ATTRIB_VOL, vol);
@@ -366,10 +367,11 @@ void MainWindow::loadConf()
     }
 }
 void MainWindow::resumePlay(){
+    this->mute = true;
     this->playlist->setCurrent(this->current);
-    this->setVolume(0, false);
-    this->setVolume(this->ui->horizontalSlider_2->value(), true);
     this->setPosition(this->_lstpos);
+    this->setVolume(this->ui->horizontalSlider_2->value(), true);
+    this->mute = false;
 }
 DWORD MainWindow::getType(){
     BASS_CHANNELINFO *inf = new BASS_CHANNELINFO();
@@ -469,7 +471,10 @@ void MainWindow::changeTrack(QString str)
         this->isMod = true;
     }
     this->currplayed = str;
-    this->setVolume();
+    if(this->mute)
+        this->setVolume(0);
+    else
+        this->setVolume();
     this->setDuration();
     if(!this->timer->isActive()){
         this->timer->start();

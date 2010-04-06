@@ -74,6 +74,7 @@ private:
     bool _revscr;
     bool shuffle;
     bool isMod;
+    bool mute;
     int repeatMode; // 0 - no repeat, 1 - repeat all, 2 - repeal one
     QString _cscr;
 private slots:
