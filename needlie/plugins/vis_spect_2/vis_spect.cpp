@@ -7,11 +7,11 @@
 
 int pik[2048];
 int max[2048];
-extern "C" VIS_SPECTSHARED_EXPORT void Draw(QPainter &paint, float *fft ){
-    paint.fillRect(0, 0, paint.device()->width(), paint.device()->height(), QColor(0x00, 0x00, 0x00));
-    paint.setPen(QColor(0x00, 0xff, 0x00));
-    int w = paint.device()->width();
-    int h = paint.device()->height();
+extern "C" VIS_SPECTSHARED_EXPORT void Draw(QPainter *paint, float *fft ){
+    paint->fillRect(0, 0, paint->device()->width(), paint->device()->height(), QColor(0x00, 0x00, 0x00));
+    paint->setPen(QColor(0x00, 0xff, 0x00));
+    int w = paint->device()->width();
+    int h = paint->device()->height();
     int h1 = h * 0.5;
     int ko = h * 30;
     double gm = 0; //margin from left
@@ -29,9 +29,9 @@ extern "C" VIS_SPECTSHARED_EXPORT void Draw(QPainter &paint, float *fft ){
         if(y < h1){
             y = h1 + (y / 10); //"урезание"
         }
-        paint.drawLine((int)gm, h, (int)gm, y);
+        paint->drawLine((int)gm, h, (int)gm, y);
         if((int)(gm + ls) == (int)(gm + 2)){ //fix
-            paint.drawLine((int)(gm+1), h, (int)(gm+1), h - ((h - y) / 2));
+            paint->drawLine((int)(gm+1), h, (int)(gm+1), h - ((h - y) / 2));
             pik[(int)(gm+1)] = h - ((h - y) / 2);
             i++;
         }
@@ -46,7 +46,7 @@ extern "C" VIS_SPECTSHARED_EXPORT void Draw(QPainter &paint, float *fft ){
         if(y < h1){
             //y = h1 + (y / 10); //"урезание"
         }
-        paint.drawLine(gm, h, gm, y);
+        paint->drawLine(gm, h, gm, y);
         max[(int)gm] = y;
         gm += ls;
     }
@@ -60,11 +60,11 @@ extern "C" VIS_SPECTSHARED_EXPORT void Draw(QPainter &paint, float *fft ){
         if((int)gm > w+gm2){
             break;
         }
-        paint.drawLine(gm, h, gm, y);
+        paint->drawLine(gm, h, gm, y);
         max[(int)gm] = y;
         gm += ls;
     }
-    paint.setPen(QColor(0xff, 0x00, 0x00));
+    paint->setPen(QColor(0xff, 0x00, 0x00));
     for(int i = gm2; i < w + gm2; i++){
         if(max[i] - 1 <= pik[i] || pik[i] <= 0){
             pik[i] = max[i] - 2;
@@ -83,7 +83,7 @@ extern "C" VIS_SPECTSHARED_EXPORT void Draw(QPainter &paint, float *fft ){
         if(i+2 > w + gm2){
             return;
         }
-        paint.drawLine(i, pik[i], i + 1, pik[i + 1]);
+        paint->drawLine(i, pik[i], i + 1, pik[i + 1]);
     }
     /*
     for(int i = 0, j = 0; i < 1024; i+=8, j++){
@@ -91,25 +91,25 @@ extern "C" VIS_SPECTSHARED_EXPORT void Draw(QPainter &paint, float *fft ){
             c += fft[i+l];
         }
         c = c / 4; //вычисление среднего из 4х "соседних частот"
-        h = (int)(paint.device()->height() - (c * 10 * paint.device()->height() * 3));
-        if(h < (paint.device()->height() / 2)){
-            h = (int)((paint.device()->height() / 2) + (h / 10)); //"урезание"
+        h = (int)(paint->device()->height() - (c * 10 * paint->device()->height() * 3));
+        if(h < (paint->device()->height() / 2)){
+            h = (int)((paint->device()->height() / 2) + (h / 10)); //"урезание"
         }
         if(h <= pik[j]){
             pik[j] = h - 2;
         }
         j1 = j * 2;
-        paint.drawLine(j1, paint.device()->height(), j1, h);
+        paint->drawLine(j1, paint->device()->height(), j1, h);
         j1++;
-        paint.drawLine(j1, paint.device()->height(), j1, h);
+        paint->drawLine(j1, paint->device()->height(), j1, h);
         c = 0;
     }
     for(int k = 0; k < 128; k++){
         pik[k]+=2;
     }
-    paint.setPen(QColor(0xff, 0x00, 0x00));
+    paint->setPen(QColor(0xff, 0x00, 0x00));
     for(int k = 0; k < 128; k++){
-        paint.drawLine(k * 2 + 1, pik[k], k * 2 + 2, pik[k+1]);
+        paint->drawLine(k * 2 + 1, pik[k], k * 2 + 2, pik[k+1]);
     }
     */
 }

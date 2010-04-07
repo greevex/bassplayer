@@ -17,3 +17,4 @@ FORMS += mainwindow.ui \
     eq.ui \
     pl.ui \
     vis.ui
+RESOURCES += resources.qrc

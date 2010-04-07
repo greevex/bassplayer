@@ -35,6 +35,7 @@ Pl::~Pl()
 }
 void Pl::createActions(){
     this->del = new QAction("Delete", this);
+    this->del->setIcon(QIcon(":/res/icons/delete.png"));
     connect(this->del, SIGNAL(triggered()), this, SLOT(deleteItem()));
 }
 void Pl::contextMenuEvent(QContextMenuEvent *event){

@@ -52,14 +52,18 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event){
 void MainWindow::createActions(){
     this->shuffleAction = new QAction("&Shuffle", this);
     this->shuffleAction->setShortcut(tr("Ctrl+Alt+H"));
+    this->shuffleAction->setIcon(QIcon(":/res/icons/shuffle.png"));
     connect(this->shuffleAction, SIGNAL(triggered()), this, SLOT(turnShuffle()));
 
     this->repeatAction = new QAction("&Repeat", this);
     this->repeatAction->setShortcut(tr("Ctrl+Alt+R"));
+    this->repeatAction->setIcon(QIcon(":/res/icons/repeat.png"));
     connect(this->repeatAction, SIGNAL(triggered()), this, SLOT(setRepeat()));
 }
 void MainWindow::closeEvent(QCloseEvent *event){
     this->saveConf();
+    this->playlist->save();
+    this->vis->save();
 }
 void MainWindow::setHand()
 {
@@ -102,10 +106,13 @@ void MainWindow::openFile()
 }
 void MainWindow::playPause()
 {
-    if(BASS_ChannelIsActive(this->channel) == BASS_ACTIVE_PLAYING)
+    if(BASS_ChannelIsActive(this->channel) == BASS_ACTIVE_PLAYING){
         BASS_ChannelPause(this->channel);
+        this->ui->pushButton_2->setIcon(QIcon(":/res/icons/play.png"));
+    }
     else
     {
+        this->ui->pushButton_2->setIcon(QIcon(":/res/icons/pause.png"));
         if(this->stopping){
             BASS_StreamFree(this->channel);
             this->stopping = false;
@@ -122,8 +129,10 @@ void MainWindow::playPause()
 }
 void MainWindow::stop()
 {
+    this->ui->pushButton_2->setIcon(QIcon(":/res/icons/play.png"));
     BASS_ChannelStop(this->channel);
     BASS_StreamFree(this->channel);
+    this->ui->horizontalSlider->setValue(0);
     this->played = false;
     this->stopping = true;
     this->timer->stop();
@@ -179,7 +188,7 @@ int MainWindow::getPosition(){
 void MainWindow::setVolume()
 {
     if(this->channel){
-        float f = (float)ui->horizontalSlider_2->value()/100;
+        float f = (float)ui->horizontalSlider_2->value()/100.0;
         BASS_ChannelSetAttribute(this->channel, BASS_ATTRIB_VOL, f);
     }
 }
@@ -196,12 +205,12 @@ void MainWindow::setVolume(int val, bool fade){
 }
 void MainWindow::setPan()
 {
-    float pan = (float)(this->ui->horizontalSlider_3->value() - 10) / 10;
+    float pan = (float)(this->ui->horizontalSlider_3->value() - 10) / 10.0;
     BASS_ChannelSetAttribute(this->channel, BASS_ATTRIB_PAN, pan);
 }
 void MainWindow::updateHFX()
 {
-    //срезание низких частот
+    //СЃСЂРµР·Р°РЅРёРµ РЅРёР·РєРёС… С‡Р°СЃС‚РѕС‚
     BASS_DX8_PARAMEQ *eq1 = new BASS_DX8_PARAMEQ();
     BASS_DX8_PARAMEQ *eq2 = new BASS_DX8_PARAMEQ();
     BASS_DX8_PARAMEQ *eq3 = new BASS_DX8_PARAMEQ();
@@ -220,7 +229,7 @@ void MainWindow::updateHFX()
     delete eq1;
     delete eq2;
     delete eq3;
-    //установка fx
+    //СѓСЃС‚Р°РЅРѕРІРєР° fx
     /*
     BASS_DX8_ECHO *ex = new BASS_DX8_ECHO();
     ex->lPanDelay = false;
@@ -312,8 +321,6 @@ void MainWindow::saveConf()
     setting.setValue("LastPosition", this->getPosition());
     setting.setValue("Shuffle", this->shuffle);
     setting.setValue("Repeat", this->repeatMode);
-
-    this->playlist->save();
 }
 void MainWindow::loadConf()
 {
@@ -519,53 +526,42 @@ void MainWindow::setTitle(){
         this->setWindowTitle(name);
     }
 }
-void MainWindow::toggleEQ()
-{
-    if(!this->eq->isHidden())
-    {
+void MainWindow::toggleEQ(){
+    if(!this->eq->isHidden()){
         this->eq->hide();
-        this->ui->pushButton_4->setStyleSheet("color: blue;");
     }
-    else
-    {
+    else{
         this->eq->show();
-        this->ui->pushButton_4->setStyleSheet("color: red;");
     }
 }
 void MainWindow::togglePL(){
     if(this->playlist->isVisible()){
         this->playlist->hide();
-        this->ui->pushButton_5->setStyleSheet("color: blue;");
     }
     else{
         this->playlist->show();
-        this->ui->pushButton_5->setStyleSheet("color: red;");
     }
 }
 void MainWindow::showEq(bool vis){
     if(vis){
         this->eq->show();
-        this->ui->pushButton_4->setStyleSheet("color: red;");
     }
     else{
         this->eq->hide();
-        this->ui->pushButton_4->setStyleSheet("color: blue;");
     }
 }
 void MainWindow::showPl(bool vis){
     if(vis){
         this->playlist->show();
-        this->ui->pushButton_5->setStyleSheet("color: red;");
     }
     else{
         this->playlist->hide();
-        this->ui->pushButton_5->setStyleSheet("color: blue;");
     }
 }
 void MainWindow::setStyle(QString file){
     QFile f(file);
     if(f.exists() && f.open(QIODevice::ReadOnly)){
-        this->setStyleSheet((*new QString(f.readAll())));
+        this->setStyleSheet(QString(f.readAll()));
         f.close();
         return;
     }
@@ -573,35 +569,32 @@ void MainWindow::setStyle(QString file){
 void MainWindow::showVis(bool vis){
     if(vis){
         this->vis->show();
-        this->ui->pushButton_6->setStyleSheet("color: red;");
     }
     else{
         this->vis->hide();
-        this->ui->pushButton_6->setStyleSheet("color: blue;");
     }
 }
 void MainWindow::toggleVis(){
     if(this->vis->isVisible()){
         this->vis->hide();
-        this->ui->pushButton_6->setStyleSheet("color: blue;");
     }
     else{
         this->vis->show();
-        this->ui->pushButton_6->setStyleSheet("color: red;");
     }
 }
 void MainWindow::turnShuffle(bool shuffl){
-    qDebug() << "turn shuffle...";
     if(!shuffl){
         this->shuffle = false;
         this->ui->label_4->setStyleSheet("color: #aaa;");
+        this->ui->label_4->setToolTip(QString().fromLocal8Bit("Случайный порядок (Выкл)"));
         if(this->shuffled != NULL){
             delete this->shuffled;
         }
     }
     else{
         this->shuffle = true;
-        this->ui->label_4->setStyleSheet("color: #000;");
+        this->ui->label_4->setStyleSheet(QString().fromLocal8Bit("color: #000;"));
+        this->ui->label_4->setToolTip(QString().fromLocal8Bit("Случайный порядок (Вкл)"));
         this->shuffled = new QList<int>();
         if(this->played){
             this->shuffled->append(this->current);
@@ -612,7 +605,6 @@ void MainWindow::turnShuffle(){
     this->turnShuffle(!this->shuffle);
 }
 void MainWindow::setRepeat(){
-    qDebug() << "set repeat";
     this->setRepeat(this->repeatMode + 1);
 }
 void MainWindow::setRepeat(int mode){
@@ -620,16 +612,19 @@ void MainWindow::setRepeat(int mode){
     case 0:
         this->repeatMode = 0;
         this->ui->label_5->setStyleSheet("color: #aaa");
+        this->ui->label_5->setToolTip(QString().fromLocal8Bit("Повтор (Выкл)"));
         this->ui->label_5->setText("R");
         break;
     case 1:
         this->repeatMode = 1;
         this->ui->label_5->setStyleSheet("color: #000");
+        this->ui->label_5->setToolTip(QString().fromLocal8Bit("Повтор (Плейлист)"));
         this->ui->label_5->setText("R");
         break;
     case 2:
         this->repeatMode = 2;
         this->ui->label_5->setStyleSheet("color: #000");
+        this->ui->label_5->setToolTip(QString().fromLocal8Bit("Повтор (Трек)"));
         this->ui->label_5->setText("1");
         break;
     default:

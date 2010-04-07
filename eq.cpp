@@ -36,6 +36,7 @@ Eq::Eq(QWidget *parent) : QDialog(parent), ui(new Ui::Eq)
     connect(ui->verticalSlider_27, SIGNAL(valueChanged(int)), this, SLOT(setEQ()));
     connect(ui->verticalSlider_28, SIGNAL(valueChanged(int)), this, SLOT(setEQ()));
     this->resetAction = new QAction("Reset", this);
+    this->resetAction->setIcon(QIcon(":/res/icons/reset.png"));
     connect(this->resetAction, SIGNAL(triggered()), this, SLOT(reset()));
 }
 
