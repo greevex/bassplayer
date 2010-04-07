@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QMessageBox>
+#include <QSettings>
 
 #define FPS 40
 Vis::Vis(QWidget *parent) :
@@ -19,10 +20,11 @@ Vis::Vis(QWidget *parent) :
     this->libs = new QStringList();
     this->libsinfo = new QList<VisInfo*>();
     this->actions = new QList<QAction*>();
+    ui->setupUi(this);
     this->checkLibs();
     this->createActions();
-    this->vislib = new QLibrary("./plugins/vis_spect");
-    ui->setupUi(this);
+    this->load();
+    this->setTitle();
     if(this->isVisible())
         this->timer->start();
 }
@@ -99,13 +101,16 @@ void Vis::createActions(){
     for(int i = 0; i < this->libs->length(); i++){
         QAction *action = new QAction(this->libsinfo->value(i)->name, this);
         action->setData(i);
+        action->setIcon(QIcon(":/res/icons/plugin.png"));
         connect(action, SIGNAL(triggered()), this, SLOT(changeVis()));
         this->actions->append(action);
     }
     QAction *about = new QAction("About", this);
+    about->setIcon(QIcon(":/res/icons/information.png"));
     connect(about, SIGNAL(triggered()), this, SLOT(about()));
     this->actions->append(about);
     QAction *fs = new QAction("Toggle Fullscreen", this);
+    fs->setIcon(QIcon(":/res/icons/fullscreen.png"));
     connect(fs, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
     this->actions->append(fs);
 }
@@ -125,6 +130,7 @@ void Vis::changeVis(){
     delete this->vislib;
     this->vislib = new QLibrary(this->libs->value(libid));
     qDebug() << "vis lib chaged to" << this->libsinfo->value(libid)->name;
+    this->setTitle();
 }
 void Vis::hideEvent(QHideEvent *event){
     this->timer->stop();
@@ -150,4 +156,30 @@ void Vis::toggleFullScreen(){
     else{
         this->setWindowState(Qt::WindowNoState);
     }
+}
+void Vis::save(){
+    QSettings s("./vis.ini", QSettings::IniFormat);
+    s.setValue("dll", this->vislib->fileName());
+    s.setValue("W", this->width());
+    s.setValue("H", this->height());
+}
+void Vis::load(){
+    QSettings s("./vis.ini", QSettings::IniFormat);
+    this->vislib = new QLibrary(s.value("dll", "./plugins/vis_spect.dll").toString());
+    this->resize(s.value("W", this->minimumWidth()).toInt(), s.value("H", this->minimumHeight()).toInt());
+}
+void Vis::setTitle(){
+   typedef void (*VisInf)(VisInfo*);
+   VisInf inf = (VisInf)this->vislib->resolve("Info");
+   if(inf){
+       VisInfo *info = new VisInfo();
+       inf(info);
+       this->setWindowTitle(info->name);
+       delete info;
+       return;
+   }
+   else{
+       qDebug() << "error: could't resolve Info()";
+   }
+   this->setWindowTitle("Visual");
 }

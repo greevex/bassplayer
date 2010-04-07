@@ -28,6 +28,7 @@ public:
     Vis(QWidget *parent = 0);
     ~Vis();
     void setChannel(HSTREAM chan);
+    void save();
 
 protected:
     void changeEvent(QEvent *e);
@@ -45,6 +46,8 @@ private:
     QLibrary *vislib;
     void checkLibs();
     void createActions();
+    void load();
+    void setTitle();
     QStringList *libs;
     QList<VisInfo*> *libsinfo;
     QList<QAction*> *actions;

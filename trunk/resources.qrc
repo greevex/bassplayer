@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/res">
+        <file>icons/delete.png</file>
+        <file>icons/repeat.png</file>
+        <file>icons/shuffle.png</file>
+        <file>icons/information.png</file>
+        <file>icons/plugin.png</file>
+        <file>icons/fullscreen.png</file>
+        <file>icons/reset.png</file>
+        <file>icons/stop.png</file>
+        <file>icons/next.png</file>
+        <file>icons/open.png</file>
+        <file>icons/play.png</file>
+        <file>icons/prew.png</file>
+        <file>icons/equalizer.png</file>
+        <file>icons/video.png</file>
+        <file>icons/playlist.png</file>
+        <file>icons/pause.png</file>
+    </qresource>
+</RCC>
