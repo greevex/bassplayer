@@ -40,7 +40,7 @@ private:
     Ui::Vis *ui;
     QTimer *timer;
     HSTREAM chan;
-    float fft[2048];
+    float fft[4096];
     int fps;
     QLibrary *vislib;
     void checkLibs();
@@ -51,6 +51,7 @@ private:
 private slots:
     void changeVis();
     void about();
+    void toggleFullScreen();
 };
 
 #endif // VIS_H

@@ -5,14 +5,14 @@
 #include <QDebug>
 #include <QMessageBox>
 
-#define FPS 50
+#define FPS 40
 Vis::Vis(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Vis)
 {
     this->fps = FPS;
     this->setWindowTitle("Spectr");
-    this->setWindowFlags(Qt::Tool | Qt::MSWindowsFixedSizeDialogHint);
+    this->setWindowFlags(Qt::Tool);
     this->timer = new QTimer(this);
     this->timer->setInterval((int)(1000 / fps));
     connect(this->timer, SIGNAL(timeout()), this, SLOT(repaint()));
@@ -55,9 +55,9 @@ void Vis::paintEvent(QPaintEvent *event){
         Drawer Draw = (Drawer)vislib->resolve("Draw");
         QPainter paint(this);
         if(Draw){
-            BASS_ChannelGetData(this->chan, fft, BASS_DATA_FFT4096); //получение даных БФП
+            BASS_ChannelGetData(this->chan, fft, BASS_DATA_FFT8192); //получение даных БФП
             Draw(paint, fft);
-            memset(fft, 0, 8192);
+            memset(fft, 0, 16384);
         }
         else{
             qDebug() << "error: cold not resolve Draw...";
@@ -105,6 +105,9 @@ void Vis::createActions(){
     QAction *about = new QAction("About", this);
     connect(about, SIGNAL(triggered()), this, SLOT(about()));
     this->actions->append(about);
+    QAction *fs = new QAction("Toggle Fullscreen", this);
+    connect(fs, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
+    this->actions->append(fs);
 }
 void Vis::contextMenuEvent(QContextMenuEvent *event){
     QMenu menu(this);
@@ -138,5 +141,13 @@ void Vis::about(){
             inf(vinf);
             QMessageBox::about(this, "About " + vinf->name, "<h2>" + vinf->name + "</h2><br />" + "<b>Autor:</b> " + vinf->autor + "<br /><b>version:</b> " + vinf->version);
         }
+    }
+}
+void Vis::toggleFullScreen(){
+    if(!this->isFullScreen()){
+        this->setWindowState(Qt::WindowFullScreen);
+    }
+    else{
+        this->setWindowState(Qt::WindowNoState);
     }
 }

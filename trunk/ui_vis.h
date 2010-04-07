@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'vis.ui'
 **
-** Created: Fri 2. Apr 19:05:45 2010
+** Created: Wed 7. Apr 16:20:53 2010
 **      by: Qt User Interface Compiler version 4.6.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -27,7 +27,9 @@ public:
     {
         if (Vis->objectName().isEmpty())
             Vis->setObjectName(QString::fromUtf8("Vis"));
-        Vis->resize(256, 192);
+        Vis->resize(320, 240);
+        Vis->setMinimumSize(QSize(320, 240));
+        Vis->setMaximumSize(QSize(1024, 768));
 
         retranslateUi(Vis);
 
