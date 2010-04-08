@@ -7,6 +7,10 @@
 #include <QSettings>
 
 #define FPS 40
+
+typedef void (*Drawer)(QPainter&, float*);
+typedef void (*VisInf)(VisInfo*);
+
 Vis::Vis(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Vis)
@@ -53,7 +57,6 @@ void Vis::paintEvent(QPaintEvent *event){
             this->fps = FPS;
             this->timer->setInterval((int)(1000 /this->fps));
         }
-        typedef void (*Drawer)(QPainter&, float*);
         Drawer Draw = (Drawer)vislib->resolve("Draw");
         QPainter paint(this);
         if(Draw){
@@ -80,7 +83,6 @@ void Vis::checkLibs(){
         for(int i = 0; i < list.length(); i++){
             qDebug() << "checking: " << list.value(i);
             if(QLibrary::isLibrary("./plugins/" + list.value(i))){
-                typedef void (*VisInf)(VisInfo*);
                 VisInf inf = (VisInf)QLibrary::resolve("./plugins/" + list.value(i), "Info");
                 if(!inf){
                     qDebug() << "error: could't resolve method Info";
@@ -140,12 +142,17 @@ void Vis::showEvent(QShowEvent *event){
 }
 void Vis::about(){
     if(this->vislib->isLoaded()){
-        typedef void (*VisInf)(VisInfo*);
         VisInf inf = (VisInf)this->vislib->resolve("Info");
         if(inf){
             VisInfo *vinf = new VisInfo();
             inf(vinf);
-            QMessageBox::about(this, "About " + vinf->name, "<h2>" + vinf->name + "</h2><br />" + "<b>Autor:</b> " + vinf->autor + "<br /><b>version:</b> " + vinf->version);
+            QMessageBox::about(this, "About " + vinf->name,
+                               "<h2>" + vinf->name + "</h2><br />" +
+                               "<div style='text-align: left;'>" +
+                                "<b>Autor:</b> " + vinf->autor + "<br />" +
+                                "<b>Version:</b> " + vinf->version +
+                               "</div>"
+                               );
         }
     }
 }
@@ -169,7 +176,6 @@ void Vis::load(){
     this->resize(s.value("W", this->minimumWidth()).toInt(), s.value("H", this->minimumHeight()).toInt());
 }
 void Vis::setTitle(){
-   typedef void (*VisInf)(VisInfo*);
    VisInf inf = (VisInf)this->vislib->resolve("Info");
    if(inf){
        VisInfo *info = new VisInfo();

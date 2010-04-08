@@ -43,6 +43,7 @@ protected:
     void dropEvent(QDropEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
     void hideEvent(QHideEvent *event);
+    void showEvent(QShowEvent *event);
 
 private:
     Ui::Pl *ui;

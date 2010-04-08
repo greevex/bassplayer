@@ -23,9 +23,15 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Spectr</string>
+   <string>Visualization</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/res/icons/plugin.png</normaloff>:/res/icons/plugin.png</iconset>
   </property>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
