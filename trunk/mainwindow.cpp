@@ -51,12 +51,12 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event){
 }
 void MainWindow::createActions(){
     this->shuffleAction = new QAction("&Shuffle", this);
-    this->shuffleAction->setShortcut(tr("Ctrl+Alt+H"));
+    this->shuffleAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_H));
     this->shuffleAction->setIcon(QIcon(":/res/icons/shuffle.png"));
     connect(this->shuffleAction, SIGNAL(triggered()), this, SLOT(turnShuffle()));
 
     this->repeatAction = new QAction("&Repeat", this);
-    this->repeatAction->setShortcut(tr("Ctrl+Alt+R"));
+    this->repeatAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
     this->repeatAction->setIcon(QIcon(":/res/icons/repeat.png"));
     connect(this->repeatAction, SIGNAL(triggered()), this, SLOT(setRepeat()));
 }

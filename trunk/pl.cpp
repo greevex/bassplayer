@@ -11,8 +11,7 @@
 #include <QApplication>
 #include <QDebug>
 
-Pl::Pl(QWidget *parent) : QDialog(parent),
-    ui(new Ui::Pl)
+Pl::Pl(QWidget *parent) : QDialog(parent), ui(new Ui::Pl)
 {
     this->setWindowTitle("Playlist");
     this->setWindowFlags(Qt::Tool | Qt::MSWindowsFixedSizeDialogHint);
@@ -25,7 +24,6 @@ Pl::Pl(QWidget *parent) : QDialog(parent),
     this->ui->listWidget->setSelectionMode(QAbstractItemView::ContiguousSelection);
     this->createActions();
     connect(this->ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(trackClick(QListWidgetItem*)));
-    connect(this->ui->listWidget, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(mouseOver(QListWidgetItem*)));
     this->_curr = 0;
     this->path = "./playlist.m3u";
 }
