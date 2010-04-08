@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'vis.ui'
 **
-** Created: Wed 7. Apr 16:20:53 2010
+** Created: Thu 8. Apr 16:16:14 2010
 **      by: Qt User Interface Compiler version 4.6.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -30,6 +30,9 @@ public:
         Vis->resize(320, 240);
         Vis->setMinimumSize(QSize(320, 240));
         Vis->setMaximumSize(QSize(1024, 768));
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/res/icons/plugin.png"), QSize(), QIcon::Normal, QIcon::Off);
+        Vis->setWindowIcon(icon);
 
         retranslateUi(Vis);
 
@@ -38,7 +41,7 @@ public:
 
     void retranslateUi(QDialog *Vis)
     {
-        Vis->setWindowTitle(QApplication::translate("Vis", "Spectr", 0, QApplication::UnicodeUTF8));
+        Vis->setWindowTitle(QApplication::translate("Vis", "Visualization", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

@@ -149,15 +149,17 @@ int Pl::getMax(){
     return this->tracks->length() - 1;
 }
 void Pl::select(int idx){
-    QList<QListWidgetItem *> items = this->ui->listWidget->selectedItems();
-    for(int i = 0; i < items.length(); i++){
-        items.value(i)->setSelected(false);
+    if(this->isVisible()){
+        QList<QListWidgetItem *> items = this->ui->listWidget->selectedItems();
+        for(int i = 0; i < items.length(); i++){
+            items.value(i)->setSelected(false);
+        }
+        if(!this->ui->listWidget->item(idx)){
+            return;
+        }
+        this->ui->listWidget->item(idx)->setSelected(true);
+        this->ui->listWidget->scrollToItem(this->ui->listWidget->item(idx), QAbstractItemView::EnsureVisible);
     }
-    if(!this->ui->listWidget->item(idx)){
-        return;
-    }
-    this->ui->listWidget->item(idx)->setSelected(true);
-    this->ui->listWidget->scrollToItem(this->ui->listWidget->item(idx), QAbstractItemView::EnsureVisible);
 }
 bool Pl::save(){
     if(path.isEmpty()){
@@ -241,4 +243,7 @@ void Pl::deleteItem(){
 }
 void Pl::hideEvent(QHideEvent *event){
     qDebug() << "hide playlist...";
+}
+void Pl::showEvent(QShowEvent *event){
+    this->select(this->_curr);
 }
