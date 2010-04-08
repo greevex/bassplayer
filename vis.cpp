@@ -11,12 +11,9 @@
 typedef void (*Drawer)(QPainter&, float*);
 typedef void (*VisInf)(VisInfo*);
 
-Vis::Vis(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::Vis)
+Vis::Vis(QWidget *parent) : QDialog(parent), ui(new Ui::Vis)
 {
     this->fps = FPS;
-    this->setWindowTitle("Spectr");
     this->setWindowFlags(Qt::Tool);
     this->timer = new QTimer(this);
     this->timer->setInterval((int)(1000 / fps));
@@ -32,7 +29,6 @@ Vis::Vis(QWidget *parent) :
     if(this->isVisible())
         this->timer->start();
 }
-
 Vis::~Vis()
 {
     delete ui;
@@ -187,5 +183,5 @@ void Vis::setTitle(){
    else{
        qDebug() << "error: could't resolve Info()";
    }
-   this->setWindowTitle("Visual");
+   this->setWindowTitle("Visualization");
 }
