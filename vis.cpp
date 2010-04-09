@@ -11,12 +11,16 @@
 typedef void (*Drawer)(QPainter&, float*);
 typedef void (*VisInf)(VisInfo*);
 
+typedef void (*INIT)(QWidget*);
+typedef void (*UPDATE)(float *fft);
+typedef void (*STOP)();
+
 Vis::Vis(QWidget *parent) : QDialog(parent), ui(new Ui::Vis)
 {
-    this->fps = FPS;
+    this->ctype = 1;
     this->setWindowFlags(Qt::Tool);
     this->timer = new QTimer(this);
-    this->timer->setInterval((int)(1000 / fps));
+    this->timer->setInterval((int)(1000 / FPS));
     connect(this->timer, SIGNAL(timeout()), this, SLOT(repaint()));
     this->libs = new QStringList();
     this->libsinfo = new QList<VisInfo*>();
@@ -48,26 +52,30 @@ void Vis::changeEvent(QEvent *e)
     }
 }
 void Vis::paintEvent(QPaintEvent *event){
-    if(this->isVisible()){
-        if(this->fps != FPS){
-            this->fps = FPS;
-            this->timer->setInterval((int)(1000 /this->fps));
-        }
+    if(!this->isVisible()){
+        return;
+    }
+    BASS_ChannelGetData(this->chan, fft, BASS_DATA_FFT8192); //получение даных БФП
+    if(this->ctype == 1){
         Drawer Draw = (Drawer)vislib->resolve("Draw");
         QPainter paint(this);
         if(Draw){
-            BASS_ChannelGetData(this->chan, fft, BASS_DATA_FFT8192); //получение даных БФП
             Draw(paint, fft);
-            memset(fft, 0, 16384);
         }
         else{
             qDebug() << "error: cold not resolve Draw...";
         }
     }
-    else{
-        this->fps = 1;
-        this->timer->setInterval((int)(1000 / this->fps));
+    else if(this->ctype == 2){
+        UPDATE upd = (UPDATE)this->vislib->resolve("Update");
+        if(upd){
+            upd(fft);
+        }
+        else{
+            err << "could't resolve Update()";
+        }
     }
+    memset(fft, 0, 16384);
 }
 void Vis::checkLibs(){
     QDir dir("./plugins");
@@ -122,6 +130,15 @@ void Vis::contextMenuEvent(QContextMenuEvent *event){
 void Vis::changeVis(){
     QAction *act = qobject_cast<QAction*>(sender());
     int libid = act->data().toInt();
+    if(this->ctype == 2){
+        STOP stop = (STOP)this->vislib->resolve("Stop");
+        if(stop){
+            stop();
+        }
+        else{
+            err << "could't resolve Stop()";
+        }
+    }
     if(!this->vislib->unload()){
         qDebug() << "error unloading library...";
     }
@@ -129,6 +146,24 @@ void Vis::changeVis(){
     this->vislib = new QLibrary(this->libs->value(libid));
     qDebug() << "vis lib chaged to" << this->libsinfo->value(libid)->name;
     this->setTitle();
+    VisInf inf = (VisInf)this->vislib->resolve("Info");
+    if(inf){
+        VisInfo *vinf = new VisInfo();
+        inf(vinf);
+        if(vinf->ver == 2){
+            this->ctype = 2;
+            INIT init = (INIT)this->vislib->resolve("Init");
+            if(init){
+                init(this->window());
+            }
+            else{
+                err << "could't resolve Init()";
+            }
+        }
+        else{
+            this->ctype = 1;
+        }
+    }
 }
 void Vis::hideEvent(QHideEvent *event){
     this->timer->stop();
@@ -170,6 +205,24 @@ void Vis::load(){
     QSettings s("./vis.ini", QSettings::IniFormat);
     this->vislib = new QLibrary(s.value("dll", "./plugins/vis_spect.dll").toString());
     this->resize(s.value("W", this->minimumWidth()).toInt(), s.value("H", this->minimumHeight()).toInt());
+    VisInf inf = (VisInf)this->vislib->resolve("Info");
+    if(inf){
+        VisInfo *vinf = new VisInfo();
+        inf(vinf);
+        if(vinf->ver == 2){
+            this->ctype = 2;
+            INIT init = (INIT)this->vislib->resolve("Init");
+            if(init){
+                init(this->window());
+            }
+            else{
+                err << "could't resolve Init()";
+            }
+        }
+        else{
+            this->ctype = 1;
+        }
+    }
 }
 void Vis::setTitle(){
    VisInf inf = (VisInf)this->vislib->resolve("Info");
