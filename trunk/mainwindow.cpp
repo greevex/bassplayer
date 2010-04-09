@@ -62,8 +62,11 @@ void MainWindow::createActions(){
 }
 void MainWindow::closeEvent(QCloseEvent *event){
     this->saveConf();
+    this->setVolume(0, true);
     this->playlist->save();
     this->vis->save();
+    BASS_StreamFree(this->channel);
+    exit(0);
 }
 void MainWindow::setHand()
 {
@@ -187,10 +190,7 @@ int MainWindow::getPosition(){
 }
 void MainWindow::setVolume()
 {
-    if(this->channel){
-        float f = (float)ui->horizontalSlider_2->value()/100.0;
-        BASS_ChannelSetAttribute(this->channel, BASS_ATTRIB_VOL, f);
-    }
+    this->setVolume(this->ui->horizontalSlider_2->value(), false);
 }
 void MainWindow::setVolume(int val, bool fade){
     if(this->channel){
@@ -210,7 +210,7 @@ void MainWindow::setPan()
 }
 void MainWindow::updateHFX()
 {
-    //срезание низких частот
+    //��������...
     BASS_DX8_PARAMEQ *eq1 = new BASS_DX8_PARAMEQ();
     BASS_DX8_PARAMEQ *eq2 = new BASS_DX8_PARAMEQ();
     BASS_DX8_PARAMEQ *eq3 = new BASS_DX8_PARAMEQ();
@@ -431,7 +431,6 @@ void MainWindow::next(){
         trk = this->current;
     }
     this->playlist->setCurrent(trk);
-    this->current = this->playlist->getCurrent();
 }
 void MainWindow::prew(){
     int trk = this->current - 1;
@@ -463,7 +462,6 @@ void MainWindow::changeTrack(QString str)
     }
     if(this->isMod){
         BASS_MusicFree(this->channel);
-        this->isMod = false;
     }
     else{
         BASS_StreamFree(this->channel);
