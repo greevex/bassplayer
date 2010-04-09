@@ -11,6 +11,7 @@
 #include <QContextMenuEvent>
 #include <QMenu>
 
+#define err qDebug() << "error:"
 
 namespace Ui {
     class Vis;
@@ -20,6 +21,7 @@ typedef struct{
     QString version;
     QString autor;
     QString name;
+    int ver;
 } VisInfo;
 
 class Vis : public QDialog {
@@ -42,8 +44,8 @@ private:
     QTimer *timer;
     HSTREAM chan;
     float fft[4096];
-    int fps;
     QLibrary *vislib;
+    int ctype;
     void checkLibs();
     void createActions();
     void load();
