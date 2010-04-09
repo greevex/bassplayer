@@ -21,7 +21,7 @@ Vis::Vis(QWidget *parent) : QDialog(parent), ui(new Ui::Vis)
     this->setWindowFlags(Qt::Tool);
     this->timer = new QTimer(this);
     this->timer->setInterval((int)(1000 / FPS));
-    connect(this->timer, SIGNAL(timeout()), this, SLOT(repaint()));
+    connect(this->timer, SIGNAL(timeout()), this, SLOT(update()));
     this->libs = new QStringList();
     this->libsinfo = new QList<VisInfo*>();
     this->actions = new QList<QAction*>();
