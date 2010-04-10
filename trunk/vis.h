@@ -46,9 +46,12 @@ private:
     float fft[4096];
     QLibrary *vislib;
     int ctype;
+    int curr;
     void checkLibs();
     void createActions();
     void load();
+    void load(QString dll);
+    void unload();
     void setTitle();
     QStringList *libs;
     QList<VisInfo*> *libsinfo;

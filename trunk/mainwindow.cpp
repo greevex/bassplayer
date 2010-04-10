@@ -3,12 +3,16 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#define loadproc qDebug() << "Loading" <<
 
 MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWindow)
 {
     this->setWindowFlags(Qt::Window | Qt::MSWindowsFixedSizeDialogHint);
+    loadproc "main ui";
     ui->setupUi(this);
+    loadproc "BASS";
     BASS_Init(-1, 44100, 0, NULL, NULL);
+    loadproc "system variables";
     this->_tstrl = 20;
     this->_cstrct = 0;
     this->duration = 0;
@@ -22,21 +26,32 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->shuffle = false;
     this->mute = false;
     this->shuffled = NULL;
+    loadproc "timers";
     this->timer = new QTimer(this);
     this->titletimer = new QTimer(this);
+    loadproc "equalizer";
     this->eq = new Eq(this);
+    loadproc "playlist";
     this->playlist = new Pl(this);
+    loadproc "visualization";
     this->vis = new Vis(this);
+    loadproc "handlers";
     this->setHand();
+    loadproc "config";
     this->loadConf();
+    loadproc "timers interval";
     this->timer->setInterval(200);
     this->titletimer->setInterval(500);
     this->titletimer->start();
     this->stopping = true;
+    loadproc "style";
     this->setStyle(this->style);
+    loadproc "playlist" << this->playlist->path;
     this->playlist->load(this->playlist->path);
+    loadproc "actions";
     this->createActions();
     this->resumePlay();
+    loadproc "done...";
 }
 
 MainWindow::~MainWindow()
@@ -407,7 +422,6 @@ QString MainWindow::getTitle(){
                             );
         }
     }
-    qDebug() << "returned:" << str;
     return str;
 }
 void MainWindow::next(){
