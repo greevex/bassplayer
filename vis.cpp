@@ -7,6 +7,7 @@
 #include <QSettings>
 
 #define FPS 40
+#define loadproc qDebug() << "Loading process in Vis:" <<
 
 typedef void (*Drawer)(QPainter&, float*);
 typedef void (*VisInf)(VisInfo*);
@@ -18,6 +19,7 @@ typedef void (*STOP)();
 Vis::Vis(QWidget *parent) : QDialog(parent), ui(new Ui::Vis)
 {
     this->ctype = 1;
+    this->curr = -1;
     this->setWindowFlags(Qt::Tool);
     this->timer = new QTimer(this);
     this->timer->setInterval((int)(1000 / FPS));
@@ -78,6 +80,7 @@ void Vis::paintEvent(QPaintEvent *event){
     memset(fft, 0, 16384);
 }
 void Vis::checkLibs(){
+    loadproc "loading visualization plugins";
     QDir dir("./plugins");
     if(dir.exists()){
         QStringList filters;
@@ -85,11 +88,9 @@ void Vis::checkLibs(){
         filters.append("vis_*.so");
         QStringList list = dir.entryList(filters, QDir::Files);
         for(int i = 0; i < list.length(); i++){
-            qDebug() << "checking: " << list.value(i);
             if(QLibrary::isLibrary("./plugins/" + list.value(i))){
                 VisInf inf = (VisInf)QLibrary::resolve("./plugins/" + list.value(i), "Info");
                 if(!inf){
-                    qDebug() << "error: could't resolve method Info";
                     continue;
                 }
                 else{
@@ -97,7 +98,7 @@ void Vis::checkLibs(){
                     inf(vinf);
                     this->libs->append(list.value(i));
                     this->libsinfo->append(vinf);
-                    qDebug() << "added: " << list.value(i) << ", autor: " << vinf->autor << ", name: " << vinf->name << ", version: " << vinf->version;
+                    loadproc "plugin" << list.value(i) << "added";
                 }
             }
         }
@@ -130,45 +131,19 @@ void Vis::contextMenuEvent(QContextMenuEvent *event){
 void Vis::changeVis(){
     QAction *act = qobject_cast<QAction*>(sender());
     int libid = act->data().toInt();
-    if(this->ctype == 2){
-        STOP stop = (STOP)this->vislib->resolve("Stop");
-        if(stop){
-            stop();
-        }
-        else{
-            err << "could't resolve Stop()";
-        }
-    }
-    if(!this->vislib->unload()){
-        qDebug() << "error unloading library...";
-    }
-    delete this->vislib;
-    this->vislib = new QLibrary(this->libs->value(libid));
-    qDebug() << "vis lib chaged to" << this->libsinfo->value(libid)->name;
+    this->unload();
+    this->load(this->libs->value(libid));
     this->setTitle();
-    VisInf inf = (VisInf)this->vislib->resolve("Info");
-    if(inf){
-        VisInfo *vinf = new VisInfo();
-        inf(vinf);
-        if(vinf->ver == 2){
-            this->ctype = 2;
-            INIT init = (INIT)this->vislib->resolve("Init");
-            if(init){
-                init(this->window());
-            }
-            else{
-                err << "could't resolve Init()";
-            }
-        }
-        else{
-            this->ctype = 1;
-        }
-    }
+    this->curr = libid;
 }
 void Vis::hideEvent(QHideEvent *event){
     this->timer->stop();
+    if(this->curr != -1)
+        this->unload();
 }
 void Vis::showEvent(QShowEvent *event){
+    if(this->curr != -1)
+        this->load(this->libs->value(this->curr));
     this->timer->start();
 }
 void Vis::about(){
@@ -201,10 +176,8 @@ void Vis::save(){
     s.setValue("W", this->width());
     s.setValue("H", this->height());
 }
-void Vis::load(){
-    QSettings s("./vis.ini", QSettings::IniFormat);
-    this->vislib = new QLibrary(s.value("dll", "./plugins/vis_spect.dll").toString());
-    this->resize(s.value("W", this->minimumWidth()).toInt(), s.value("H", this->minimumHeight()).toInt());
+void Vis::load(QString dll){
+    this->vislib = new QLibrary(dll);
     VisInf inf = (VisInf)this->vislib->resolve("Info");
     if(inf){
         VisInfo *vinf = new VisInfo();
@@ -223,6 +196,22 @@ void Vis::load(){
             this->ctype = 1;
         }
     }
+    this->curr = this->libs->indexOf(dll, 0);
+}
+void Vis::load(){
+    QSettings s("./vis.ini", QSettings::IniFormat);
+    this->resize(s.value("W", this->minimumWidth()).toInt(), s.value("H", this->minimumHeight()).toInt());
+    this->load(s.value("dll", "./plugins/vis_spect.dll").toString());
+}
+void Vis::unload(){
+    if(this->ctype == 2){
+        STOP stop = (STOP)this->vislib->resolve("Stop");
+        if(stop){
+            stop();
+        }
+    }
+    this->vislib->unload();
+    delete this->vislib;
 }
 void Vis::setTitle(){
    VisInf inf = (VisInf)this->vislib->resolve("Info");

@@ -4,11 +4,9 @@
 #include <QDialog>
 #include <QList>
 #include <QFileInfo>
-#include <QTimer>
 #include <QContextMenuEvent>
 #include <QAction>
 #include <QMenu>
-#include <QMoveEvent>
 #include "ui_pl.h"
 
 QT_BEGIN_NAMESPACE
@@ -27,7 +25,6 @@ public:
     ~Pl();
     bool addTrack(QString path);
     void addPath(QString path);
-    void next(QString file);
     bool load(QString path);
     bool save();
     QString current();
@@ -47,10 +44,8 @@ protected:
 
 private:
     Ui::Pl *ui;
-    QList<QString> *tracks;
     void select(int idx);
     void createActions();
-    QTimer *tmr;
     QAction *del;
     const char* html;
     int _curr;
