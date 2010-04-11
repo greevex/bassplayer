@@ -1,3 +1,4 @@
+//vis_spect.cpp
 #include "vis_spect_global.h"
 #include "vis.h"
 #include <QtGui>

@@ -172,12 +172,12 @@ void Vis::toggleFullScreen(){
 }
 void Vis::save(){
     QSettings s("./vis.ini", QSettings::IniFormat);
-    s.setValue("dll", this->vislib->fileName());
+    s.setValue("dll", this->curr == -1 ? "" : this->libs->value(this->curr));
     s.setValue("W", this->width());
     s.setValue("H", this->height());
 }
 void Vis::load(QString dll){
-    this->vislib = new QLibrary(dll);
+    this->vislib = new QLibrary("./plugins/" + dll);
     VisInf inf = (VisInf)this->vislib->resolve("Info");
     if(inf){
         VisInfo *vinf = new VisInfo();
@@ -201,7 +201,7 @@ void Vis::load(QString dll){
 void Vis::load(){
     QSettings s("./vis.ini", QSettings::IniFormat);
     this->resize(s.value("W", this->minimumWidth()).toInt(), s.value("H", this->minimumHeight()).toInt());
-    this->load(s.value("dll", "./plugins/vis_spect.dll").toString());
+    this->load(s.value("dll", "vis_spect.dll").toString());
 }
 void Vis::unload(){
     if(this->ctype == 2){
