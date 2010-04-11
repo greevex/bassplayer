@@ -5,6 +5,15 @@
 
 #define loadproc qDebug() << "Loading" <<
 
+void CALLBACK dsp(HDSP handle, DWORD channel, void *buffer, DWORD length, void *user){
+    float *s = (float*)buffer;
+    for(DWORD a = 0; a < length/4; a+=2){
+        float t = s[a];
+        s[a] = s[a+1];
+        s[a+1] = t;
+    }
+}
+
 MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWindow)
 {
     this->setWindowFlags(Qt::Window | Qt::MSWindowsFixedSizeDialogHint);
@@ -244,17 +253,9 @@ void MainWindow::updateHFX()
     delete eq1;
     delete eq2;
     delete eq3;
-    //установка fx
-    /*
-    BASS_DX8_ECHO *ex = new BASS_DX8_ECHO();
-    ex->lPanDelay = false;
-    ex->fFeedback = 5;
-    ex->fLeftDelay = 400;
-    ex->fRightDelay = 410;
-    ex->fWetDryMix = 90;
-    BASS_FXSetParameters(BASS_ChannelSetFX(this->channel, BASS_FX_DX8_ECHO, 1), ex);
-    */
-    //
+
+    //BASS_ChannelSetDSP(this->channel, &dsp, 0, 2);
+
     this->eq->e80 = BASS_ChannelSetFX(this->channel, BASS_FX_DX8_PARAMEQ, 1);
     this->eq->e120 = BASS_ChannelSetFX(this->channel, BASS_FX_DX8_PARAMEQ, 1);
     this->eq->e150 = BASS_ChannelSetFX(this->channel, BASS_FX_DX8_PARAMEQ, 1);

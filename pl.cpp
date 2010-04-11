@@ -5,8 +5,6 @@
 #include <QDropEvent>
 #include <QUrl>
 #include <QDir>
-#include <QSettings>
-#include <QTimer>
 #include <QTranslator>
 #include <QApplication>
 #include <QDebug>
@@ -90,7 +88,6 @@ bool Pl::addTrack(QString path)
     if(path.isEmpty() || !QFile(path).exists()){
         return false;
     }
-    //this->tracks->append(path);
     QFileInfo *f = new QFileInfo(path);
     QListWidgetItem *trk = new QListWidgetItem(this->ui->listWidget);
     trk->setText(f->fileName());
@@ -221,6 +218,7 @@ void Pl::setTitle(int idx, QString title){
     }
 }
 void Pl::deleteItem(){
+    bool change = false;
     QList<QListWidgetItem *> items = this->ui->listWidget->selectedItems();
     if(items.length() > 0){
         for(int i = 0; i < items.length(); i++){
@@ -231,10 +229,15 @@ void Pl::deleteItem(){
                 this->_curr--;
             }
             else if(pos == this->_curr){
-                this->setCurrent(this->_curr+1);
+                change = true;
+                this->_curr++;
+                //this->setCurrent(this->_curr+1);
             }
             delete items.value(i);
         }
+    }
+    if(change){
+        this->setCurrent(this->_curr);
     }
 }
 void Pl::hideEvent(QHideEvent *event){
