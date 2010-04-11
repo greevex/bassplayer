@@ -86,6 +86,8 @@ void Vis::checkLibs(){
         QStringList filters;
         filters.append("vis_*.dll");
         filters.append("vis_*.so");
+        filters.append("libvis_*.so");
+        filters.append("libvis_*.so*");
         QStringList list = dir.entryList(filters, QDir::Files);
         for(int i = 0; i < list.length(); i++){
             if(QLibrary::isLibrary("./plugins/" + list.value(i))){
