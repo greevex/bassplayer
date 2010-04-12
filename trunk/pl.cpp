@@ -14,6 +14,7 @@
 Pl::Pl(QWidget *parent) : QDialog(parent), ui(new Ui::Pl)
 {
     this->_curr = 0;
+    this->_currs = 0;
     this->path = "./playlist.m3u";
     loadproc "setup ui";
     ui->setupUi(this);
@@ -28,6 +29,8 @@ Pl::Pl(QWidget *parent) : QDialog(parent), ui(new Ui::Pl)
     loadproc "create actions";
     this->createActions();
     connect(this->ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(trackClick(QListWidgetItem*)));
+    connect(this->ui->searchInput, SIGNAL(textChanged(QString)), this, SLOT(search(QString)));
+    connect(this->ui->pushButton, SIGNAL(clicked()), this, SLOT(nextSearch()));
 }
 Pl::~Pl()
 {
@@ -114,7 +117,6 @@ void Pl::trackClick(QListWidgetItem *qlwi)
    this->changeTrack(qlwi->data(Qt::UserRole).toString());
     this->select(this->_curr);
 }
-
 QString Pl::current(){
     if(this->_curr >= this->ui->listWidget->count())
         this->_curr = 0;
@@ -122,6 +124,9 @@ QString Pl::current(){
     return this->ui->listWidget->item(this->_curr)->data(Qt::UserRole).toString();
 }
 void Pl::setCurrent(int pos){
+    if(this->ui->listWidget->count() == 0){
+        return;
+    }
     if(this->ui->listWidget->count() < 1){
         return;
     }
@@ -244,4 +249,40 @@ void Pl::hideEvent(QHideEvent *event){
 }
 void Pl::showEvent(QShowEvent *event){
     this->select(this->_curr);
+}
+void Pl::search(QString s){
+    QBrush brush(QColor(0xcc, 0xcc, 0xff), Qt::SolidPattern);
+    this->ui->listWidget->item(this->_currs)->setBackground(brush);
+    this->_currs = 0;
+    if(s.isEmpty() || s.length() < 2){
+        return;
+    }
+    this->searcha(s);
+}
+void Pl::searcha(QString s){
+    QBrush brush(QColor(0x90, 0x40, 0x10), Qt::Dense1Pattern);
+    this->lastSearch = s;
+    int len = this->ui->listWidget->count();
+    bool repeated = false;
+    if(this->_currs > len){
+        this->_currs = 0;
+    }
+    for(int i = this->_currs; i < len; i++){
+        QListWidgetItem *itm = this->ui->listWidget->item(i);
+        if(itm->text().indexOf(s, 0, Qt::CaseInsensitive) > 0){
+            qDebug() << "найдено:" << itm->text();
+            this->_currs = i;
+            itm->setBackground(brush);
+            this->ui->listWidget->scrollToItem(itm, QAbstractItemView::EnsureVisible);
+            return;
+        }
+        if(i == len - 1 && !repeated){
+            i = 0;
+        }
+    }
+}
+void Pl::nextSearch(){
+    this->ui->listWidget->item(this->_currs)->setBackground(QBrush(QColor(0xcc, 0xcc, 0xff), Qt::SolidPattern));
+    this->_currs++;
+    this->searcha(this->lastSearch);
 }

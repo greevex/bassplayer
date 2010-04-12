@@ -62,7 +62,6 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->resumePlay();
     loadproc "done...";
 }
-
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -90,8 +89,9 @@ void MainWindow::closeEvent(QCloseEvent *event){
     this->playlist->save();
     this->vis->save();
     BASS_StreamFree(this->channel);
-    exit(0);
+    return;
 }
+
 void MainWindow::setHand()
 {
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(openFile()));
