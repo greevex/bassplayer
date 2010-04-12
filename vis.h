@@ -24,6 +24,13 @@ typedef struct{
     int ver;
 } VisInfo;
 
+typedef void (*Drawer)(QPainter&, float*);
+typedef void (*VisInf)(VisInfo*);
+
+typedef void (*INIT)(QWidget*);
+typedef void (*UPDATE)(float *fft);
+typedef void (*STOP)();
+
 class Vis : public QDialog {
     Q_OBJECT
 public:
@@ -53,6 +60,8 @@ private:
     void load(QString dll);
     void unload();
     void setTitle();
+    UPDATE Upd;
+    Drawer Draw;
     QStringList *libs;
     QList<VisInfo*> *libsinfo;
     QList<QAction*> *actions;

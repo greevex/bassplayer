@@ -9,12 +9,7 @@
 #define FPS 40
 #define loadproc qDebug() << "Loading process in Vis:" <<
 
-typedef void (*Drawer)(QPainter&, float*);
-typedef void (*VisInf)(VisInfo*);
 
-typedef void (*INIT)(QWidget*);
-typedef void (*UPDATE)(float *fft);
-typedef void (*STOP)();
 
 Vis::Vis(QWidget *parent) : QDialog(parent), ui(new Ui::Vis)
 {
@@ -59,19 +54,17 @@ void Vis::paintEvent(QPaintEvent *event){
     }
     BASS_ChannelGetData(this->chan, fft, BASS_DATA_FFT8192); //получение даных БФП
     if(this->ctype == 1){
-        Drawer Draw = (Drawer)vislib->resolve("Draw");
-        QPainter paint(this);
-        if(Draw){
-            Draw(paint, fft);
+        if(this->Draw){
+            QPainter paint(this);
+            this->Draw(paint, fft);
         }
         else{
             qDebug() << "error: cold not resolve Draw...";
         }
     }
     else if(this->ctype == 2){
-        UPDATE upd = (UPDATE)this->vislib->resolve("Update");
-        if(upd){
-            upd(fft);
+        if(this->Upd){
+            this->Upd(fft);
         }
         else{
             err << "could't resolve Update()";
@@ -189,6 +182,7 @@ void Vis::load(QString dll){
             INIT init = (INIT)this->vislib->resolve("Init");
             if(init){
                 init(this->window());
+                this->Upd = (UPDATE)this->vislib->resolve("Update");
             }
             else{
                 err << "could't resolve Init()";
@@ -196,6 +190,7 @@ void Vis::load(QString dll){
         }
         else{
             this->ctype = 1;
+            this->Draw = (Drawer)this->vislib->resolve("Draw");
         }
     }
     this->curr = this->libs->indexOf(dll, 0);
@@ -207,10 +202,14 @@ void Vis::load(){
 }
 void Vis::unload(){
     if(this->ctype == 2){
+        this->Upd = NULL;
         STOP stop = (STOP)this->vislib->resolve("Stop");
         if(stop){
             stop();
         }
+    }
+    else{
+        this->Draw = NULL;
     }
     this->vislib->unload();
     delete this->vislib;

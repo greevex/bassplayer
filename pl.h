@@ -49,9 +49,14 @@ private:
     QAction *del;
     const char* html;
     int _curr;
+    int _currs;
+    void searcha(QString s);
+    QString lastSearch;
 private slots:
     void trackClick(QListWidgetItem *qlwi);
     void deleteItem();
+    void search(QString s);
+    void nextSearch();
 signals:
     void changeTrack(QString);
 };

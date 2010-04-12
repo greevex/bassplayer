@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'pl.ui'
 **
-** Created: Thu 1. Apr 23:34:01 2010
+** Created: Mon 12. Apr 15:36:01 2010
 **      by: Qt User Interface Compiler version 4.6.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -16,7 +16,9 @@
 #include <QtGui/QButtonGroup>
 #include <QtGui/QDialog>
 #include <QtGui/QHeaderView>
+#include <QtGui/QLineEdit>
 #include <QtGui/QListWidget>
+#include <QtGui/QPushButton>
 
 QT_BEGIN_NAMESPACE
 
@@ -24,15 +26,23 @@ class Ui_Pl
 {
 public:
     QListWidget *listWidget;
+    QLineEdit *searchInput;
+    QPushButton *pushButton;
 
     void setupUi(QDialog *Pl)
     {
         if (Pl->objectName().isEmpty())
             Pl->setObjectName(QString::fromUtf8("Pl"));
-        Pl->resize(300, 300);
+        Pl->resize(300, 263);
         listWidget = new QListWidget(Pl);
         listWidget->setObjectName(QString::fromUtf8("listWidget"));
-        listWidget->setGeometry(QRect(0, 0, 301, 301));
+        listWidget->setGeometry(QRect(0, 0, 301, 241));
+        searchInput = new QLineEdit(Pl);
+        searchInput->setObjectName(QString::fromUtf8("searchInput"));
+        searchInput->setGeometry(QRect(0, 241, 251, 20));
+        pushButton = new QPushButton(Pl);
+        pushButton->setObjectName(QString::fromUtf8("pushButton"));
+        pushButton->setGeometry(QRect(250, 240, 51, 23));
 
         retranslateUi(Pl);
 
@@ -42,6 +52,7 @@ public:
     void retranslateUi(QDialog *Pl)
     {
         Pl->setWindowTitle(QApplication::translate("Pl", "Playlist", 0, QApplication::UnicodeUTF8));
+        pushButton->setText(QApplication::translate("Pl", "Next", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };
