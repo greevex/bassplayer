@@ -278,6 +278,7 @@ void Pl::searcha(QString s){
         }
         if(i == len - 1 && !repeated){
             i = 0;
+            repeated = true;
         }
     }
 }
