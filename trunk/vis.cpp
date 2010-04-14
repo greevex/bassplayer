@@ -8,7 +8,7 @@
 
 #define FPS 40
 #define loadproc qDebug() << "Loading process in Vis:" <<
-
+#define PATH QCoreApplication::applicationDirPath()
 
 
 Vis::Vis(QWidget *parent) : QDialog(parent), ui(new Ui::Vis)
@@ -74,7 +74,7 @@ void Vis::paintEvent(QPaintEvent *event){
 }
 void Vis::checkLibs(){
     loadproc "loading visualization plugins";
-    QDir dir("./plugins");
+    QDir dir(PATH + "/plugins");
     if(dir.exists()){
         QStringList filters;
         filters.append("vis_*.dll");
@@ -83,8 +83,8 @@ void Vis::checkLibs(){
         filters.append("libvis_*.so*");
         QStringList list = dir.entryList(filters, QDir::Files);
         for(int i = 0; i < list.length(); i++){
-            if(QLibrary::isLibrary("./plugins/" + list.value(i))){
-                VisInf inf = (VisInf)QLibrary::resolve("./plugins/" + list.value(i), "Info");
+            if(QLibrary::isLibrary(PATH + "/plugins/" + list.value(i))){
+                VisInf inf = (VisInf)QLibrary::resolve(PATH + "/plugins/" + list.value(i), "Info");
                 if(!inf){
                     continue;
                 }
@@ -166,13 +166,13 @@ void Vis::toggleFullScreen(){
     }
 }
 void Vis::save(){
-    QSettings s("./vis.ini", QSettings::IniFormat);
+    QSettings s(PATH + "/vis.ini", QSettings::IniFormat);
     s.setValue("dll", this->curr == -1 ? "" : this->libs->value(this->curr));
     s.setValue("W", this->width());
     s.setValue("H", this->height());
 }
 void Vis::load(QString dll){
-    this->vislib = new QLibrary("./plugins/" + dll);
+    this->vislib = new QLibrary(PATH + "/plugins/" + dll);
     VisInf inf = (VisInf)this->vislib->resolve("Info");
     if(inf){
         VisInfo *vinf = new VisInfo();
@@ -196,7 +196,7 @@ void Vis::load(QString dll){
     this->curr = this->libs->indexOf(dll, 0);
 }
 void Vis::load(){
-    QSettings s("./vis.ini", QSettings::IniFormat);
+    QSettings s(PATH + "/vis.ini", QSettings::IniFormat);
     this->resize(s.value("W", this->minimumWidth()).toInt(), s.value("H", this->minimumHeight()).toInt());
     this->load(s.value("dll", "vis_spect.dll").toString());
 }

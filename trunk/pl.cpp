@@ -10,12 +10,13 @@
 #include <QDebug>
 
 #define loadproc qDebug() << "Loading proc in Pl:" <<
+#define PATH QCoreApplication::applicationDirPath()
 
 Pl::Pl(QWidget *parent) : QDialog(parent), ui(new Ui::Pl)
 {
     this->_curr = 0;
     this->_currs = 0;
-    this->path = "./playlist.m3u";
+    this->path = PATH + "/playlist.m3u";
     loadproc "setup ui";
     ui->setupUi(this);
     loadproc "setup ui properties";
