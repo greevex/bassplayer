@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 
 #define loadproc qDebug() << "Loading" <<
+#define PATH QCoreApplication::applicationDirPath()
 
 void CALLBACK dsp(HDSP handle, DWORD channel, void *buffer, DWORD length, void *user){
     float *s = (float*)buffer;
@@ -55,8 +56,18 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->stopping = true;
     loadproc "style";
     this->setStyle(this->style);
-    loadproc "playlist" << this->playlist->path;
-    this->playlist->load(this->playlist->path);
+    QStringList list = QCoreApplication::arguments();
+    if(list.length() > 1){
+        for(int i = 1; i < list.length(); i++){
+            this->playlist->addTrack(list.value(i));
+        }
+        this->current = 0;
+        this->_lstpos = 0;
+    }
+    else{
+        loadproc "playlist" << this->playlist->path;
+        this->playlist->load(this->playlist->path);
+    }
     loadproc "actions";
     this->createActions();
     this->resumePlay();
@@ -226,11 +237,14 @@ void MainWindow::setVolume(int val, bool fade){
             BASS_ChannelSetAttribute(this->channel, BASS_ATTRIB_VOL, vol);
         }
     }
+    this->ui->horizontalSlider_2->setToolTip(QString().setNum(val).append("%"));
 }
 void MainWindow::setPan()
 {
     float pan = (float)(this->ui->horizontalSlider_3->value() - 10) / 10.0;
     BASS_ChannelSetAttribute(this->channel, BASS_ATTRIB_PAN, pan);
+    int val = this->ui->horizontalSlider_3->value() - 10;
+    this->ui->horizontalSlider_3->setToolTip(QString().setNum(val).prepend(val > 0 ? "+" : ""));
 }
 void MainWindow::updateHFX()
 {
@@ -287,7 +301,7 @@ void MainWindow::updateHFX()
 }
 void MainWindow::saveConf()
 {
-    QSettings setting("./setting.ini", QSettings::IniFormat, this);
+    QSettings setting(PATH + "/setting.ini", QSettings::IniFormat, this);
     setting.setValue("Conf", 1);
     setting.setValue("Volume", ui->horizontalSlider_2->value());
     setting.setValue("Pan", this->ui->horizontalSlider_3->value());
@@ -332,7 +346,7 @@ void MainWindow::saveConf()
     setting.setValue("VisPosX", this->vis->x());
     setting.setValue("VisPosY", this->vis->y());
     setting.setValue("Style", this->style);
-    setting.setValue("PlayList", "./playlist.m3u");
+    setting.setValue("PlayList", PATH + "/playlist.m3u");
     setting.setValue("LastPlayed", this->playlist->getCurrent());
     setting.setValue("LastPosition", this->getPosition());
     setting.setValue("Shuffle", this->shuffle);
@@ -341,7 +355,7 @@ void MainWindow::saveConf()
 void MainWindow::loadConf()
 {
 
-    QSettings setting("./setting.ini", QSettings::IniFormat, this);
+    QSettings setting(PATH + "/setting.ini", QSettings::IniFormat, this);
     if(setting.value("Conf", QVariant::Int).toInt() == 1)
     {
         this->move(setting.value("X", 0).toInt(), setting.value("Y", 0).toInt());
@@ -383,7 +397,7 @@ void MainWindow::loadConf()
         this->playlist->move(setting.value("PlPosX", 0).toInt(), setting.value("PlPosY", 0).toInt());
         this->vis->move(setting.value("VisPosX", 0).toInt(), setting.value("VisPosY", 0).toInt());
         this->style = setting.value("Style", "./style.css").toString();
-        this->playlist->path = setting.value("Playlist", "./playlist.m3u").toString();
+        this->playlist->path = setting.value("Playlist", PATH + "/playlist.m3u").toString();
         this->current = setting.value("LastPlayed", 0).toInt();
         this->_lstpos = setting.value("LastPosition", 0).toInt();
         this->turnShuffle(setting.value("Shuffle", false).toBool());
@@ -572,7 +586,7 @@ void MainWindow::showPl(bool vis){
     }
 }
 void MainWindow::setStyle(QString file){
-    QFile f(file);
+    QFile f(PATH + "/" + file);
     if(f.exists() && f.open(QIODevice::ReadOnly)){
         this->setStyleSheet(QString(f.readAll()));
         f.close();
