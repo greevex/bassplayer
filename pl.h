@@ -33,6 +33,7 @@ public:
     int getCurrent();
     int getMax();
     void setTitle(int idx, QString title);
+    void clear();
 
 protected:
     void changeEvent(QEvent *e);

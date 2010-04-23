@@ -31,6 +31,9 @@ private:
     Ui::MainWindow *ui;
     QTimer *timer;
     QTimer *titletimer;
+    QTimer *checkf;
+    QFile *lock;
+    uint modtime;
     Eq *eq;
     Pl *playlist;
     Vis *vis;
@@ -99,6 +102,7 @@ private slots:
     void turnShuffle(bool shuffle);
     void setRepeat();
     void setRepeat(int mode);
+    void checkFile();
 };
 
 #endif // MAINWINDOW_H
