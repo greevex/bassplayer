@@ -95,7 +95,7 @@ bool Pl::addTrack(QString path)
     QFileInfo *f = new QFileInfo(path);
     QListWidgetItem *trk = new QListWidgetItem(this->ui->listWidget);
     trk->setText(f->fileName());
-    trk->setData(Qt::UserRole, path);
+    trk->setData(Qt::UserRole, path.replace('\\', "/", Qt::CaseInsensitive));
     delete f;
     return true;
 }
