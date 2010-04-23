@@ -64,8 +64,8 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     loadproc "config";
     this->loadConf();
     loadproc "timers interval";
-    this->timer->setInterval(200);
-    this->checkf->setInterval(500);
+    this->timer->setInterval(250);
+    this->checkf->setInterval(250);
     this->checkf->start();
     this->titletimer->setInterval(500);
     this->titletimer->start();
@@ -556,14 +556,13 @@ void MainWindow::setTitle(){
     QString name = this->_cscr.split('/', QString::SkipEmptyParts).last();
     int len = name.length();
     if(len > this->_tstrl){
+        this->setWindowTitle(name.mid(this->_cstrct, this->_tstrl));
         if(!this->_revscr){
-            this->setWindowTitle(name.mid(this->_cstrct, this->_tstrl));
             this->_cstrct++;
             if(len <= this->_cstrct + this->_tstrl)
                 this->_revscr = true;
         }
         else{
-            this->setWindowTitle(name.mid(this->_cstrct, this->_tstrl));
             this->_cstrct--;
             if(this->_cstrct <= 0)
                 this->_revscr = false;
