@@ -17,6 +17,18 @@ void CALLBACK dsp(HDSP handle, DWORD channel, void *buffer, DWORD length, void *
 
 MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWindow)
 {
+    QFile f(QDir::tempPath() + "/bplay.lock");
+    if(f.exists() && !f.remove()){
+        QFile f1(QDir::tempPath() + "/bplay.files");
+        f1.open(QIODevice::WriteOnly);
+        f1.setTextModeEnabled(true);
+        QStringList listf = QApplication::arguments();
+        for(int i = 1; i < listf.length(); i++){
+            f1.write(QByteArray().append(QString(listf.value(i)).toUtf8().append("\n")));
+        }
+        f1.close();
+        exit(0);
+    }
     this->setWindowFlags(Qt::Window | Qt::MSWindowsFixedSizeDialogHint);
     loadproc "main ui";
     ui->setupUi(this);
@@ -27,6 +39,7 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->_cstrct = 0;
     this->duration = 0;
     this->repeatMode = 0;
+    this->modtime = 0;
     this->_cscr = "";
     this->currplayed = "";
     this->lastPath = "./";
@@ -39,6 +52,7 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     loadproc "timers";
     this->timer = new QTimer(this);
     this->titletimer = new QTimer(this);
+    this->checkf = new QTimer(this);
     loadproc "equalizer";
     this->eq = new Eq(this);
     loadproc "playlist";
@@ -51,6 +65,8 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->loadConf();
     loadproc "timers interval";
     this->timer->setInterval(200);
+    this->checkf->setInterval(500);
+    this->checkf->start();
     this->titletimer->setInterval(500);
     this->titletimer->start();
     this->stopping = true;
@@ -72,6 +88,8 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->createActions();
     this->resumePlay();
     loadproc "done...";
+    this->lock = new QFile(QDir::tempPath() + "/bplay.lock");
+    this->lock->open(QIODevice::WriteOnly);
 }
 MainWindow::~MainWindow()
 {
@@ -99,6 +117,7 @@ void MainWindow::closeEvent(QCloseEvent *event){
     this->setVolume(0, true);
     this->playlist->save();
     this->vis->save();
+    this->lock->close();
     BASS_StreamFree(this->channel);
     return;
 }
@@ -119,6 +138,7 @@ void MainWindow::setHand()
     connect(this->ui->pushButton_7, SIGNAL(clicked()), this, SLOT(next()));
     connect(this->ui->pushButton_8, SIGNAL(clicked()), this, SLOT(prew()));
     connect(this->playlist, SIGNAL(changeTrack(QString)), this, SLOT(changeTrack(QString)));
+    connect(this->checkf, SIGNAL(timeout()), this, SLOT(checkFile()));
 }
 void MainWindow::changeEvent(QEvent *e)
 {
@@ -657,5 +677,29 @@ void MainWindow::setRepeat(int mode){
     default:
         this->setRepeat(0);
         break;
+    }
+}
+void MainWindow::checkFile(){
+    QFileInfo f(QDir::tempPath() + "/bplay.files");
+    uint t =f.lastModified().toTime_t();
+    if(this->modtime == 0){
+        this->modtime = t;
+        return;
+    }
+    else{
+        if(t > this->modtime){
+            this->stop();
+            this->playlist->clear();
+            QFile file(QDir::tempPath() + "/bplay.files");
+            file.open(QIODevice::ReadOnly);
+            file.setTextModeEnabled(true);
+            while(file.bytesAvailable() > 0){
+                QString afile = QString().fromUtf8(file.readLine(1024)).trimmed();
+                this->playlist->addTrack(afile);
+            }
+            this->playlist->setCurrent(0);
+            file.close();
+            this->modtime = t;
+        }
     }
 }

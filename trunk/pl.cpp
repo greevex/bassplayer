@@ -288,3 +288,11 @@ void Pl::nextSearch(){
     this->_currs++;
     this->searcha(this->lastSearch);
 }
+void Pl::clear(){
+    int len = this->ui->listWidget->count();
+    for(int i = len - 1; i > -1; i--){
+        delete this->ui->listWidget->item(i);
+    }
+    this->_curr = 0;
+    this->_currs = 0;
+}
