@@ -26,7 +26,7 @@ public:
     ~Pl();
     bool addTrack(QString path);
     void addPath(QString path);
-    void addURL(QUrl url);
+    bool addURL(QUrl url);
     bool load(QString path);
     bool save();
     QString current();

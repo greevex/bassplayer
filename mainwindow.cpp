@@ -737,8 +737,7 @@ void MainWindow::loadPlugins(){
         QStringList list = dir.entryList(filters, QDir::Files | QDir::NoDotAndDotDot, QDir::NoSort);
         for(int i = 0; i < list.length(); i++){
             loadproc list.value(i);
-            HPLUGIN plug = BASS_PluginLoad(((QString)(list.value(i)).prepend(dir.path() + "/")).toLocal8Bit().constData(), 0);
-            //qDebug() << BASS_PluginGetInfo(plug)->formatc << BASS_PluginGetInfo(plug)->formats << BASS_PluginGetInfo(plug)->version;
+            BASS_PluginLoad(((QString)(list.value(i)).prepend(dir.path() + "/")).toLocal8Bit().constData(), 0);
         }
     }
 }
