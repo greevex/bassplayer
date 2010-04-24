@@ -34,6 +34,8 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     ui->setupUi(this);
     loadproc "BASS";
     BASS_Init(-1, 44100, 0, NULL, NULL);
+    loadproc "BASS plugins";
+    this->loadPlugins();
     loadproc "system variables";
     this->_tstrl = 20;
     this->_cstrct = 0;
@@ -67,7 +69,7 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->timer->setInterval(250);
     this->checkf->setInterval(250);
     this->checkf->start();
-    this->titletimer->setInterval(500);
+    this->titletimer->setInterval(300);
     this->titletimer->start();
     this->stopping = true;
     loadproc "style";
@@ -515,15 +517,26 @@ void MainWindow::changeTrack(QString str)
     else{
         BASS_StreamFree(this->channel);
     }
-    this->channel = BASS_StreamCreateFile(false, str.toLocal8Bit().constData(), 0, 0, BASS_STREAM_AUTOFREE);
-    if(BASS_ErrorGetCode() != BASS_OK){
-        BASS_StreamFree(this->channel);
-        this->channel = BASS_MusicLoad(false, str.toLocal8Bit(), 0, 0, BASS_MUSIC_AUTOFREE, 44100);
+    if(this->isURL(str)){
+        qDebug() << "opening:" << str;
+        this->channel = BASS_StreamCreateURL(str.toLocal8Bit().constData(), 0, BASS_STREAM_AUTOFREE, NULL, 0);
+        qDebug() << "Error" << BASS_ErrorGetCode();
         if(BASS_ErrorGetCode() != BASS_OK){
             BASS_StreamFree(this->channel);
             return;
         }
-        this->isMod = true;
+    }
+    else{
+        this->channel = BASS_StreamCreateFile(false, str.toLocal8Bit().constData(), 0, 0, BASS_STREAM_AUTOFREE);
+        if(BASS_ErrorGetCode() != BASS_OK){
+            BASS_StreamFree(this->channel);
+            this->channel = BASS_MusicLoad(false, str.toLocal8Bit(), 0, 0, BASS_MUSIC_AUTOFREE, 44100);
+            if(BASS_ErrorGetCode() != BASS_OK){
+                BASS_StreamFree(this->channel);
+                return;
+            }
+            this->isMod = true;
+        }
     }
     this->currplayed = str;
     if(this->mute)
@@ -545,16 +558,21 @@ void MainWindow::changeTrack(QString str)
     this->playPause();
 }
 void MainWindow::setTitle(){
+    bool isNew = false;
     if(this->_cscr != this->currplayed){
         this->_cscr = this->currplayed;
         this->_revscr = false;
         this->_cstrct = 0;
+        isNew = true;
     }
     if(_cscr.indexOf('/') == -1){
         return;
     }
     QString name = this->_cscr.split('/', QString::SkipEmptyParts).last();
     int len = name.length();
+    if(isNew){
+        this->_cstrct = len;
+    }
     if(len > this->_tstrl){
         this->setWindowTitle(name.mid(this->_cstrct, this->_tstrl));
         if(!this->_revscr){
@@ -699,6 +717,28 @@ void MainWindow::checkFile(){
             this->playlist->setCurrent(0);
             file.close();
             this->modtime = t;
+        }
+    }
+}
+bool MainWindow::isURL(QString str){
+    QUrl url(str);
+    if(url.scheme() == "http"){
+        return url.isValid();
+    }
+    else{
+        return false;
+    }
+}
+void MainWindow::loadPlugins(){
+    QDir dir(PATH + "/plugins");
+    if(dir.exists()){
+        QStringList filters;
+        filters.append("bass*.dll");
+        QStringList list = dir.entryList(filters, QDir::Files | QDir::NoDotAndDotDot, QDir::NoSort);
+        for(int i = 0; i < list.length(); i++){
+            loadproc list.value(i);
+            HPLUGIN plug = BASS_PluginLoad(((QString)(list.value(i)).prepend(dir.path() + "/")).toLocal8Bit().constData(), 0);
+            //qDebug() << BASS_PluginGetInfo(plug)->formatc << BASS_PluginGetInfo(plug)->formats << BASS_PluginGetInfo(plug)->version;
         }
     }
 }

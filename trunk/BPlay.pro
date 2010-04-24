@@ -8,13 +8,16 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     eq.cpp \
     pl.cpp \
-    vis.cpp
+    vis.cpp \
+    openurl.cpp
 HEADERS += mainwindow.h \
     eq.h \
     pl.h \
-    vis.h
+    vis.h \
+    openurl.h
 FORMS += mainwindow.ui \
     eq.ui \
     pl.ui \
-    vis.ui
+    vis.ui \
+    openurl.ui
 RESOURCES += resources.qrc

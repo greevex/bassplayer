@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QTranslator>
 #include <QApplication>
+#include <QMessageBox>
 #include <QDebug>
 
 #define loadproc qDebug() << "Loading proc in Pl:" <<
@@ -29,6 +30,10 @@ Pl::Pl(QWidget *parent) : QDialog(parent), ui(new Ui::Pl)
     this->ui->listWidget->setSelectionMode(QAbstractItemView::ContiguousSelection);
     loadproc "create actions";
     this->createActions();
+    this->ourl = new OpenUrl(this);
+    this->ourl->hide();
+    connect(this->ourl, SIGNAL(okPressed()), this, SLOT(addUrlf()));
+    connect(this->ourl, SIGNAL(canceled()), this, SLOT(urlCanceled()));
     connect(this->ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(trackClick(QListWidgetItem*)));
     connect(this->ui->searchInput, SIGNAL(textChanged(QString)), this, SLOT(search(QString)));
     connect(this->ui->pushButton, SIGNAL(clicked()), this, SLOT(nextSearch()));
@@ -41,10 +46,14 @@ void Pl::createActions(){
     this->del = new QAction("Delete", this);
     this->del->setIcon(QIcon(":/res/icons/delete.png"));
     connect(this->del, SIGNAL(triggered()), this, SLOT(deleteItem()));
+
+    this->addu = new QAction("Add URL", this);
+    connect(this->addu, SIGNAL(triggered()), this, SLOT(addUrl()));
 }
 void Pl::contextMenuEvent(QContextMenuEvent *event){
     QMenu menu(this);
     menu.addAction(this->del);
+    menu.addAction(this->addu);
     menu.exec(event->globalPos());
 }
 void Pl::changeEvent(QEvent *e)
@@ -69,6 +78,9 @@ void Pl::dropEvent(QDropEvent *event){
     QList<QUrl> urls = event->mimeData()->urls();
     QString file;
     for(int i = 0; i < urls.length(); i++){
+        if(urls.value(i).scheme() == "http"){
+            this->addURL(urls.value(i));
+        }
         file = urls.value(i).toString(QUrl::None);
 #ifdef Q_WS_WIN //windows, cut file:///
         file = file.mid(8);
@@ -99,6 +111,12 @@ bool Pl::addTrack(QString path)
     delete f;
     return true;
 }
+void Pl::addURL(QUrl url){
+    QListWidgetItem *itm = new QListWidgetItem(this->ui->listWidget);
+    itm->setText(url.authority());
+    itm->setData(Qt::UserRole, url.toString(QUrl::None));
+}
+
 void Pl::addPath(QString path){
     QDir dir(path);
     if(dir.exists()){
@@ -295,4 +313,17 @@ void Pl::clear(){
     }
     this->_curr = 0;
     this->_currs = 0;
+}
+void Pl::addUrl(){
+    this->ourl->show();
+}
+void Pl::addUrlf(){
+    QUrl url(this->ourl->getURL());
+    if(url.scheme() == "http" && url.isValid()){
+        this->addURL(url);
+    }
+    this->ourl->hide();
+}
+void Pl::urlCanceled(){
+    this->ourl->hide();
 }
