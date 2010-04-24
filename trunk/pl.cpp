@@ -111,10 +111,14 @@ bool Pl::addTrack(QString path)
     delete f;
     return true;
 }
-void Pl::addURL(QUrl url){
+bool Pl::addURL(QUrl url){
+    if(url.scheme() != "http" || !url.isValid()){
+        return false;
+    }
     QListWidgetItem *itm = new QListWidgetItem(this->ui->listWidget);
     itm->setText(url.authority());
     itm->setData(Qt::UserRole, url.toString(QUrl::None));
+    return true;
 }
 
 void Pl::addPath(QString path){
@@ -227,6 +231,12 @@ bool Pl::load(QString path){
             }
         }
         if(this->addTrack(str)){
+            if(!title.isEmpty()){
+                this->setTitle(this->ui->listWidget->count() - 1, title);
+                title = "";
+            }
+        }
+        else if(this->addURL(str)){
             if(!title.isEmpty()){
                 this->setTitle(this->ui->listWidget->count() - 1, title);
                 title = "";
