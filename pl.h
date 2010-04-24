@@ -8,6 +8,7 @@
 #include <QAction>
 #include <QMenu>
 #include "ui_pl.h"
+#include "openurl.h"
 
 QT_BEGIN_NAMESPACE
 class QDragEnterEvent;
@@ -25,6 +26,7 @@ public:
     ~Pl();
     bool addTrack(QString path);
     void addPath(QString path);
+    void addURL(QUrl url);
     bool load(QString path);
     bool save();
     QString current();
@@ -48,14 +50,19 @@ private:
     void select(int idx);
     void createActions();
     QAction *del;
+    QAction *addu;
     const char* html;
     int _curr;
     int _currs;
     void searcha(QString s);
     QString lastSearch;
+    OpenUrl *ourl;
 private slots:
     void trackClick(QListWidgetItem *qlwi);
     void deleteItem();
+    void addUrl();
+    void addUrlf();
+    void urlCanceled();
     void search(QString s);
     void nextSearch();
 signals:

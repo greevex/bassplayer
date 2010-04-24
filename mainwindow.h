@@ -46,6 +46,8 @@ private:
     void setHand();
     void loadConf();
     void playNext();
+    void loadPlugins();
+    bool isURL(QString str);
     int getPosition();
     DWORD getType();
     QString getTitle();

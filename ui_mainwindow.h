@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Thu 8. Apr 07:12:12 2010
+** Created: Sun 25. Apr 00:08:41 2010
 **      by: Qt User Interface Compiler version 4.6.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -90,7 +90,7 @@ public:
         label = new QLabel(centralWidget);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(180, 64, 81, 16));
-        label->setStyleSheet(QString::fromUtf8("border-radius:4px;border:1px solid #000;"));
+        label->setStyleSheet(QString::fromUtf8(""));
         horizontalSlider_3 = new QSlider(centralWidget);
         horizontalSlider_3->setObjectName(QString::fromUtf8("horizontalSlider_3"));
         horizontalSlider_3->setGeometry(QRect(10, 43, 131, 16));
