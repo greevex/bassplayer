@@ -92,8 +92,10 @@ extern "C"  void Draw(QPainter *paint, float *fft ){
                 pik[i] += 4;
             else if(tmp > 100)
                 pik[i] += 3;
-            else
+            else if(tmp > 10)
                 pik[i] += 2;
+            else
+                pik[i] ++;
         }
         if(i+2 > w + gm2){
             return;

@@ -14,10 +14,10 @@ HEADERS += mainwindow.h \
     eq.h \
     pl.h \
     vis.h \
-    openurl.h
+    openurl.h \
+    config.h
 FORMS += mainwindow.ui \
     eq.ui \
     pl.ui \
-    vis.ui \
     openurl.ui
 RESOURCES += resources.qrc

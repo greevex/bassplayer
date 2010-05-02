@@ -6,6 +6,7 @@
 #include <QMenu>
 #include <QSlider>
 #include "bass.h"
+#include "config.h"
 
 namespace Ui {
     class Eq;

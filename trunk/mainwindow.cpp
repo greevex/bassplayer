@@ -4,7 +4,6 @@
 #include "ui_mainwindow.h"
 
 #define loadproc qDebug() << "Loading" <<
-#define PATH QCoreApplication::applicationDirPath()
 
 void CALLBACK dsp(HDSP handle, DWORD channel, void *buffer, DWORD length, void *user){
     float *s = (float*)buffer;
@@ -722,7 +721,7 @@ void MainWindow::checkFile(){
 }
 bool MainWindow::isURL(QString str){
     QUrl url(str);
-    if(url.scheme() == "http"){
+    if(url.scheme() == URLCHEME){
         return url.isValid();
     }
     else{

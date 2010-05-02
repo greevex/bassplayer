@@ -10,12 +10,7 @@
 #include <QAction>
 #include <QContextMenuEvent>
 #include <QMenu>
-
-#define err qDebug() << "error:"
-
-namespace Ui {
-    class Vis;
-}
+#include "config.h"
 
 typedef struct{
     QString version;
@@ -47,7 +42,6 @@ protected:
     void showEvent(QShowEvent *event);
 
 private:
-    Ui::Vis *ui;
     QTimer *timer;
     HSTREAM chan;
     float fft[4096];

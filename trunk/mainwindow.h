@@ -11,6 +11,7 @@
 #include "eq.h"
 #include "pl.h"
 #include "vis.h"
+#include "config.h"
 
 namespace Ui {
     class MainWindow;
