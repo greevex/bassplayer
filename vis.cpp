@@ -1,18 +1,21 @@
 #include "vis.h"
-#include "ui_vis.h"
 #include <QPainter>
 #include <QDir>
 #include <QDebug>
 #include <QMessageBox>
 #include <QSettings>
+#include <QApplication>
 
-#define FPS 40
 #define loadproc qDebug() << "Loading process in Vis:" <<
-#define PATH QCoreApplication::applicationDirPath()
 
-
-Vis::Vis(QWidget *parent) : QDialog(parent), ui(new Ui::Vis)
+Vis::Vis(QWidget *parent) : QDialog(parent)
 {
+    this->resize(320, 240);
+    this->setMaximumSize(1024, 768);
+    this->setMinimumSize(320, 240);
+    this->setWindowIcon(QIcon(":/res/icons/plugin.png"));
+    this->setWindowTitle("Visualization");
+
     this->ctype = 1;
     this->curr = -1;
     this->setWindowFlags(Qt::Tool);
@@ -22,7 +25,6 @@ Vis::Vis(QWidget *parent) : QDialog(parent), ui(new Ui::Vis)
     this->libs = new QStringList();
     this->libsinfo = new QList<VisInfo*>();
     this->actions = new QList<QAction*>();
-    ui->setupUi(this);
     this->checkLibs();
     this->createActions();
     this->load();
@@ -32,7 +34,6 @@ Vis::Vis(QWidget *parent) : QDialog(parent), ui(new Ui::Vis)
 }
 Vis::~Vis()
 {
-    delete ui;
 }
 void Vis::setChannel(HSTREAM chan){
     this->chan = chan;
@@ -42,7 +43,6 @@ void Vis::changeEvent(QEvent *e)
     QDialog::changeEvent(e);
     switch (e->type()) {
     case QEvent::LanguageChange:
-        ui->retranslateUi(this);
         break;
     default:
         break;
@@ -70,7 +70,7 @@ void Vis::paintEvent(QPaintEvent *event){
             err << "could't resolve Update()";
         }
     }
-    memset(fft, 0, 16384);
+    memset(fft, 0, sizeof(this->fft));
 }
 void Vis::checkLibs(){
     loadproc "loading visualization plugins";

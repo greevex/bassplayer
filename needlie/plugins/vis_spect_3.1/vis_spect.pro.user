@@ -192,7 +192,7 @@
     <value type="QString">LYNX_CFG=C:\Program Files\Lynx\lynx.cfg</value>
     <value type="QString">NUMBER_OF_PROCESSORS=2</value>
     <value type="QString">OS=Windows_NT</value>
-    <value type="QString">PATH=C:\Qt\2009.05\mingw\bin;C:\Qt\2009.05\qt\bin;C:\Program Files\ImageMagick-6.6.0-Q8;D:\Program Files\PC Connectivity Solution\;C:\Server\usr\local\TCL\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Server\usr\local\MYSQL\bin;D:\WINDOWS\system32\WindowsPowerShell\v1.0;D:\Program Files\Common Files\Autodesk Shared\;C:\Program Files\OpenSSH\bin;C:\Qt\2009.05\qt\bin;D:\Program Files\Microsoft SQL Server\100\Tools\Binn\;D:\Program Files\Microsoft SQL Server\100\DTS\Binn\;D:\Program Files\TortoiseSVN\bin;C:\Program Files\TortoiseSVN\bin</value>
+    <value type="QString">PATH=C:\Qt\2009.05\mingw\bin;C:\Qt\2009.05\qt\bin;C:\Program Files\ImageMagick-6.6.0-Q8;D:\Program Files\PC Connectivity Solution\;C:\Server\usr\local\TCL\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Server\usr\local\MYSQL\bin;D:\WINDOWS\system32\WindowsPowerShell\v1.0;D:\Program Files\Common Files\Autodesk Shared\;C:\Program Files\OpenSSH\bin;C:\Qt\2009.05\qt\bin;D:\Program Files\Microsoft SQL Server\100\Tools\Binn\;D:\Program Files\Microsoft SQL Server\100\DTS\Binn\;D:\Program Files\TortoiseSVN\bin;C:\Program Files\TortoiseSVN\bin;C:\Program Files\Microsoft Network Monitor 3\</value>
     <value type="QString">PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH</value>
     <value type="QString">PROCESSOR_ARCHITECTURE=x86</value>
     <value type="QString">PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 13, GenuineIntel</value>
@@ -241,7 +241,7 @@
     <value type="QString">LYNX_CFG=C:\Program Files\Lynx\lynx.cfg</value>
     <value type="QString">NUMBER_OF_PROCESSORS=2</value>
     <value type="QString">OS=Windows_NT</value>
-    <value type="QString">PATH=C:\Qt\2009.05\mingw\bin;C:\Qt\2009.05\qt\bin;C:\Program Files\ImageMagick-6.6.0-Q8;D:\Program Files\PC Connectivity Solution\;C:\Server\usr\local\TCL\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Server\usr\local\MYSQL\bin;D:\WINDOWS\system32\WindowsPowerShell\v1.0;D:\Program Files\Common Files\Autodesk Shared\;C:\Program Files\OpenSSH\bin;C:\Qt\2009.05\qt\bin;D:\Program Files\Microsoft SQL Server\100\Tools\Binn\;D:\Program Files\Microsoft SQL Server\100\DTS\Binn\;D:\Program Files\TortoiseSVN\bin;C:\Program Files\TortoiseSVN\bin</value>
+    <value type="QString">PATH=C:\Qt\2009.05\mingw\bin;C:\Qt\2009.05\qt\bin;C:\Program Files\ImageMagick-6.6.0-Q8;D:\Program Files\PC Connectivity Solution\;C:\Server\usr\local\TCL\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Server\usr\local\MYSQL\bin;D:\WINDOWS\system32\WindowsPowerShell\v1.0;D:\Program Files\Common Files\Autodesk Shared\;C:\Program Files\OpenSSH\bin;C:\Qt\2009.05\qt\bin;D:\Program Files\Microsoft SQL Server\100\Tools\Binn\;D:\Program Files\Microsoft SQL Server\100\DTS\Binn\;D:\Program Files\TortoiseSVN\bin;C:\Program Files\TortoiseSVN\bin;C:\Program Files\Microsoft Network Monitor 3\</value>
     <value type="QString">PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH</value>
     <value type="QString">PROCESSOR_ARCHITECTURE=x86</value>
     <value type="QString">PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 13, GenuineIntel</value>

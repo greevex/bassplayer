@@ -9,6 +9,7 @@
 #include <QMenu>
 #include "ui_pl.h"
 #include "openurl.h"
+#include "config.h"
 
 QT_BEGIN_NAMESPACE
 class QDragEnterEvent;

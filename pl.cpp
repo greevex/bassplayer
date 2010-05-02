@@ -10,8 +10,9 @@
 #include <QMessageBox>
 #include <QDebug>
 
-#define loadproc qDebug() << "Loading proc in Pl:" <<
-#define PATH QCoreApplication::applicationDirPath()
+
+#define loadproc                    qDebug() << "Loading proc in Pl:" <<
+
 
 Pl::Pl(QWidget *parent) : QDialog(parent), ui(new Ui::Pl)
 {
@@ -48,6 +49,7 @@ void Pl::createActions(){
     connect(this->del, SIGNAL(triggered()), this, SLOT(deleteItem()));
 
     this->addu = new QAction("Add URL", this);
+    this->addu->setIcon(QIcon(":/res/icons/url.png"));
     connect(this->addu, SIGNAL(triggered()), this, SLOT(addUrl()));
 }
 void Pl::contextMenuEvent(QContextMenuEvent *event){
@@ -78,7 +80,7 @@ void Pl::dropEvent(QDropEvent *event){
     QList<QUrl> urls = event->mimeData()->urls();
     QString file;
     for(int i = 0; i < urls.length(); i++){
-        if(urls.value(i).scheme() == "http"){
+        if(urls.value(i).scheme() == URLCHEME){
             this->addURL(urls.value(i));
         }
         file = urls.value(i).toString(QUrl::None);
@@ -112,7 +114,7 @@ bool Pl::addTrack(QString path)
     return true;
 }
 bool Pl::addURL(QUrl url){
-    if(url.scheme() != "http" || !url.isValid()){
+    if(url.scheme() != URLCHEME || !url.isValid()){
         return false;
     }
     QListWidgetItem *itm = new QListWidgetItem(this->ui->listWidget);
@@ -258,14 +260,12 @@ void Pl::deleteItem(){
         for(int i = 0; i < items.length(); i++){
             int pos = this->ui->listWidget->row(items.value(i));
             this->ui->listWidget->removeItemWidget(items.value(i));
-            //this->tracks->removeAt(pos);
             if(pos < this->_curr){
                 this->_curr--;
             }
             else if(pos == this->_curr){
                 change = true;
                 this->_curr++;
-                //this->setCurrent(this->_curr+1);
             }
             delete items.value(i);
         }
@@ -280,7 +280,7 @@ void Pl::showEvent(QShowEvent *event){
     this->select(this->_curr);
 }
 void Pl::search(QString s){
-    QBrush brush(QColor(0xcc, 0xcc, 0xff), Qt::SolidPattern);
+    QBrush brush(NORMALCOLOR, Qt::SolidPattern);
     this->ui->listWidget->item(this->_currs)->setBackground(brush);
     this->_currs = 0;
     if(s.isEmpty() || s.length() < 2){
@@ -289,7 +289,7 @@ void Pl::search(QString s){
     this->searcha(s);
 }
 void Pl::searcha(QString s){
-    QBrush brush(QColor(0x90, 0x40, 0x10), Qt::Dense1Pattern);
+    QBrush brush(SELECTEDCOLOR, Qt::Dense1Pattern);
     this->lastSearch = s;
     int len = this->ui->listWidget->count();
     bool repeated = false;
@@ -297,12 +297,10 @@ void Pl::searcha(QString s){
         this->_currs = 0;
     }
     for(int i = this->_currs; i < len; i++){
-        QListWidgetItem *itm = this->ui->listWidget->item(i);
-        if(itm->text().indexOf(s, 0, Qt::CaseInsensitive) > 0){
-            qDebug() << "найдено:" << itm->text();
+        if(this->ui->listWidget->item(i)->text().contains(s, Qt::CaseInsensitive)){
             this->_currs = i;
-            itm->setBackground(brush);
-            this->ui->listWidget->scrollToItem(itm, QAbstractItemView::EnsureVisible);
+            this->ui->listWidget->item(i)->setBackground(brush);
+            this->ui->listWidget->scrollToItem(this->ui->listWidget->item(i), QAbstractItemView::EnsureVisible);
             return;
         }
         if(i == len - 1 && !repeated){
@@ -312,7 +310,7 @@ void Pl::searcha(QString s){
     }
 }
 void Pl::nextSearch(){
-    this->ui->listWidget->item(this->_currs)->setBackground(QBrush(QColor(0xcc, 0xcc, 0xff), Qt::SolidPattern));
+    this->ui->listWidget->item(this->_currs)->setBackground(QBrush(NORMALCOLOR, Qt::SolidPattern));
     this->_currs++;
     this->searcha(this->lastSearch);
 }
@@ -329,7 +327,7 @@ void Pl::addUrl(){
 }
 void Pl::addUrlf(){
     QUrl url(this->ourl->getURL());
-    if(url.scheme() == "http" && url.isValid()){
+    if(url.scheme() == URLCHEME && url.isValid()){
         this->addURL(url);
     }
     this->ourl->hide();

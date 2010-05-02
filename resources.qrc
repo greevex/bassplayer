@@ -16,5 +16,6 @@
         <file>icons/video.png</file>
         <file>icons/playlist.png</file>
         <file>icons/pause.png</file>
+        <file>icons/url.png</file>
     </qresource>
 </RCC>
