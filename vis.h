@@ -1,16 +1,17 @@
 #ifndef VIS_H
 #define VIS_H
 
+#include "config.h"
+#include "bass.h"
+
 #include <QDialog>
 #include <QTimer>
-#include "bass.h"
 #include <QPainter>
 #include <QLibrary>
 #include <QList>
 #include <QAction>
 #include <QContextMenuEvent>
 #include <QMenu>
-#include "config.h"
 
 typedef struct{
     QString version;
