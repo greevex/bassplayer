@@ -1,6 +1,5 @@
 #include "eq.h"
 #include "ui_eq.h"
-#include <QDebug>
 
 Eq::Eq(QWidget *parent) : QDialog(parent), ui(new Ui::Eq)
 {

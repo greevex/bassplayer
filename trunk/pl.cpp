@@ -4,11 +4,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QUrl>
-#include <QDir>
-#include <QTranslator>
-#include <QApplication>
 #include <QMessageBox>
-#include <QDebug>
 
 
 #define loadproc                    qDebug() << "Loading proc in Pl:" <<

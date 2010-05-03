@@ -1,10 +1,6 @@
 #include "vis.h"
-#include <QPainter>
-#include <QDir>
-#include <QDebug>
 #include <QMessageBox>
 #include <QSettings>
-#include <QApplication>
 
 #define loadproc qDebug() << "Loading process in Vis:" <<
 
@@ -74,7 +70,7 @@ void Vis::paintEvent(QPaintEvent *event){
 }
 void Vis::checkLibs(){
     loadproc "loading visualization plugins";
-    QDir dir(PATH + "/plugins");
+    QDir dir(PLUGINPATH);
     if(dir.exists()){
         QStringList filters;
         filters.append("vis_*.dll");
@@ -83,8 +79,8 @@ void Vis::checkLibs(){
         filters.append("libvis_*.so*");
         QStringList list = dir.entryList(filters, QDir::Files);
         for(int i = 0; i < list.length(); i++){
-            if(QLibrary::isLibrary(PATH + "/plugins/" + list.value(i))){
-                VisInf inf = (VisInf)QLibrary::resolve(PATH + "/plugins/" + list.value(i), "Info");
+            if(QLibrary::isLibrary(PLUGINPATH + list.value(i))){
+                VisInf inf = (VisInf)QLibrary::resolve(PLUGINPATH + list.value(i), "Info");
                 if(!inf){
                     continue;
                 }
@@ -166,13 +162,13 @@ void Vis::toggleFullScreen(){
     }
 }
 void Vis::save(){
-    QSettings s(PATH + "/vis.ini", QSettings::IniFormat);
+    QSettings s(PATH + VISSETTING, QSettings::IniFormat);
     s.setValue("dll", this->curr == -1 ? "" : this->libs->value(this->curr));
     s.setValue("W", this->width());
     s.setValue("H", this->height());
 }
 void Vis::load(QString dll){
-    this->vislib = new QLibrary(PATH + "/plugins/" + dll);
+    this->vislib = new QLibrary(PLUGINPATH + dll);
     VisInf inf = (VisInf)this->vislib->resolve("Info");
     if(inf){
         VisInfo *vinf = new VisInfo();
@@ -196,7 +192,7 @@ void Vis::load(QString dll){
     this->curr = this->libs->indexOf(dll, 0);
 }
 void Vis::load(){
-    QSettings s(PATH + "/vis.ini", QSettings::IniFormat);
+    QSettings s(PATH + VISSETTING, QSettings::IniFormat);
     this->resize(s.value("W", this->minimumWidth()).toInt(), s.value("H", this->minimumHeight()).toInt());
     this->load(s.value("dll", "vis_spect.dll").toString());
 }

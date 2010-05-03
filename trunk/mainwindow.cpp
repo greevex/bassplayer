@@ -1,5 +1,4 @@
 #include <QtGui>
-#include <QDebug>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -16,9 +15,9 @@ void CALLBACK dsp(HDSP handle, DWORD channel, void *buffer, DWORD length, void *
 
 MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWindow)
 {
-    QFile f(QDir::tempPath() + "/bplay.lock");
+    QFile f(LOCKFILE);
     if(f.exists() && !f.remove()){
-        QFile f1(QDir::tempPath() + "/bplay.files");
+        QFile f1(FILESFILE);
         f1.open(QIODevice::WriteOnly);
         f1.setTextModeEnabled(true);
         QStringList listf = QApplication::arguments();
@@ -89,7 +88,7 @@ MainWindow::MainWindow(QApplication *parent) : QMainWindow(), ui(new Ui::MainWin
     this->createActions();
     this->resumePlay();
     loadproc "done...";
-    this->lock = new QFile(QDir::tempPath() + "/bplay.lock");
+    this->lock = new QFile(LOCKFILE);
     this->lock->open(QIODevice::WriteOnly);
 }
 MainWindow::~MainWindow()
@@ -322,7 +321,7 @@ void MainWindow::updateHFX()
 }
 void MainWindow::saveConf()
 {
-    QSettings setting(PATH + "/setting.ini", QSettings::IniFormat, this);
+    QSettings setting(PATH + SETTING, QSettings::IniFormat, this);
     setting.setValue("Conf", 1);
     setting.setValue("Volume", ui->horizontalSlider_2->value());
     setting.setValue("Pan", this->ui->horizontalSlider_3->value());
@@ -367,7 +366,7 @@ void MainWindow::saveConf()
     setting.setValue("VisPosX", this->vis->x());
     setting.setValue("VisPosY", this->vis->y());
     setting.setValue("Style", this->style);
-    setting.setValue("PlayList", PATH + "/playlist.m3u");
+    setting.setValue("PlayList", PATH + PLAYLIST);
     setting.setValue("LastPlayed", this->playlist->getCurrent());
     setting.setValue("LastPosition", this->getPosition());
     setting.setValue("Shuffle", this->shuffle);
@@ -376,7 +375,7 @@ void MainWindow::saveConf()
 void MainWindow::loadConf()
 {
 
-    QSettings setting(PATH + "/setting.ini", QSettings::IniFormat, this);
+    QSettings setting(PATH + SETTING, QSettings::IniFormat, this);
     if(setting.value("Conf", QVariant::Int).toInt() == 1)
     {
         this->move(setting.value("X", 0).toInt(), setting.value("Y", 0).toInt());
@@ -417,8 +416,8 @@ void MainWindow::loadConf()
         this->eq->move(setting.value("EqPosX", 0).toInt(), setting.value("EqPosY", 0).toInt());
         this->playlist->move(setting.value("PlPosX", 0).toInt(), setting.value("PlPosY", 0).toInt());
         this->vis->move(setting.value("VisPosX", 0).toInt(), setting.value("VisPosY", 0).toInt());
-        this->style = setting.value("Style", "./style.css").toString();
-        this->playlist->path = setting.value("Playlist", PATH + "/playlist.m3u").toString();
+        this->style = setting.value("Style", PATH + STYLE).toString();
+        this->playlist->path = setting.value("Playlist", PATH + PLAYLIST).toString();
         this->current = setting.value("LastPlayed", 0).toInt();
         this->_lstpos = setting.value("LastPosition", 0).toInt();
         this->turnShuffle(setting.value("Shuffle", false).toBool());
@@ -622,7 +621,7 @@ void MainWindow::showPl(bool vis){
     }
 }
 void MainWindow::setStyle(QString file){
-    QFile f(PATH + "/" + file);
+    QFile f(file);
     if(f.exists() && f.open(QIODevice::ReadOnly)){
         this->setStyleSheet(QString(f.readAll()));
         f.close();
@@ -696,7 +695,7 @@ void MainWindow::setRepeat(int mode){
     }
 }
 void MainWindow::checkFile(){
-    QFileInfo f(QDir::tempPath() + "/bplay.files");
+    QFileInfo f(FILESFILE);
     uint t =f.lastModified().toTime_t();
     if(this->modtime == 0){
         this->modtime = t;
@@ -706,7 +705,7 @@ void MainWindow::checkFile(){
         if(t > this->modtime){
             this->stop();
             this->playlist->clear();
-            QFile file(QDir::tempPath() + "/bplay.files");
+            QFile file(FILESFILE);
             file.open(QIODevice::ReadOnly);
             file.setTextModeEnabled(true);
             while(file.bytesAvailable() > 0){
@@ -729,7 +728,7 @@ bool MainWindow::isURL(QString str){
     }
 }
 void MainWindow::loadPlugins(){
-    QDir dir(PATH + "/plugins");
+    QDir dir(PLUGINPATH);
     if(dir.exists()){
         QStringList filters;
         filters.append("bass*.dll");
